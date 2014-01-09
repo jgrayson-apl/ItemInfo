@@ -1,0 +1,259 @@
+html, body, #mainContainer {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "helvetica", sans-serif;
+  color: white !important;
+  background-color: #333 !important;
+}
+
+#topToolbar,.dijitToolbar{
+  background-color: #444 !important;
+  border-bottom: solid 1px #444 !important;
+}
+
+#typeContainer, #listContainer {
+  width: 30%;
+  margin: 20px;
+  border-radius: 10px;
+  border: solid 2px #555;
+}
+
+.dijitContentPane {
+  padding: 0 !important;
+}
+
+#appTitle {
+  font-weight: bolder;
+  font-size: larger;
+}
+
+#loggedInUser {
+  float: right;
+  font-style: italic;
+}
+
+/*
+#dateNode {
+  font-size: small;
+  font-style: italic;
+}
+
+#userInfoPane {
+  text-align: center;
+}
+*/
+
+/*
+#userInfoNode {
+  font-weight: bolder;
+  font-style: italic;
+}
+*/
+
+/*
+.itemTitleNode {
+  padding: 10px;
+  text-align: center;
+  font-weight: bolder;
+  border-bottom: solid 1px #add8e6;
+}
+*/
+
+/*
+.itemNode {
+  padding: 10px;
+}
+*/
+
+/*
+.itemLabel {
+  color: blue;
+}
+*/
+
+/*
+.itemInput {
+  height: 50px;
+  max-height: 250px;
+}
+*/
+
+:focus {
+  outline: none !important;
+}
+
+.dijitToggleButtonChecked .dijitButtonNode {
+  border-color: #555 !important;
+}
+
+.dgrid {
+  border: none !important;
+}
+
+.dgrid-scroller {
+  position: relative !important;
+  height: 100%;
+  width: 100%;
+  outline: none !important;
+}
+
+.dijitToolbar, .dgrid, .dgrid-row {
+  color: white !important;
+  background-color: #333 !important;
+  background-image: none !important;
+}
+
+#listContainer .dgrid-header, #listContainer .dgrid-header-scroll {
+  height: 30px !important;
+  border-bottom: solid 1px #555;
+}
+
+.dgrid-header, .dgrid-header:hover, .dgrid-header-scroll {
+  background: none !important;
+}
+
+.dgrid-hider-toggle {
+  font-weight: bolder !important;
+  line-height: 1.5em;
+}
+
+.dgrid-no-data, .dgrid-loading {
+  color: silver;
+  font-size: 1.5em;
+  padding: 1.5em;
+  text-align: center;
+}
+
+.dgrid-row {
+  line-height: 2.0em;
+  cursor: pointer;
+  padding: 5px 0 5px 26px;
+  border-bottom: solid 1px #555;
+}
+
+.dgrid-cell {
+  border: none !important;
+}
+
+.dgrid-cell[role="columnheader"] {
+  padding: 5px !important;
+  border-right: solid 1px #555 !important;
+}
+
+.dgrid-cell-padding {
+  padding: 0 !important;
+}
+
+.dgrid-hider-toggle {
+  padding: 3px !important;
+}
+
+.field-thumbnailUrl {
+  width: 150px;
+  text-align: center;
+}
+
+.groupItem {
+  background: url(./images/Group.png) no-repeat 4px !important;
+}
+
+.rootFolder {
+  font-style: italic !important;
+}
+
+.folderItem {
+  background: url(./images/Folder16.png) no-repeat 4px !important;
+}
+
+.itemThumbnail {
+  max-height: 40px;
+  border: solid 1px #555;
+}
+
+.dgrid-selected {
+  font-weight: bolder !important;
+  /*background-color: #ddd !important;*/
+}
+
+.dgrid-selected.folderItem {
+  background-image: url(./images/FolderOpenState16.png) !important;
+}
+
+.iconItem {
+  padding-left: 24px !important;
+}
+
+.iconWebMap {
+  background: url(./images/WebMap.png) no-repeat 4px;
+}
+
+.iconExplorerMap, .iconOperationView, .iconMapPackage {
+  background: url(./images/MapPackage.png) no-repeat 4px;
+}
+
+.iconMapService, .iconFeatureService, .iconImageService, .iconKML, .iconWMS {
+  background: url(./images/MapService.png) no-repeat 4px;
+}
+
+.iconGeoprocessingService, .iconNetworkAnalysisService {
+  background: url(./images/GeoprocessingService.png) no-repeat 4px;
+}
+
+.iconLayerPackage {
+  background: url(./images/LayerPackage.png) no-repeat 4px;
+}
+
+.iconCodeSample, .iconOperationsDashboardAddIn, .iconExplorerAddIn, .iconCodeAttachment, .iconDesktopApplicationTemplate {
+  background: url(./images/CodeSample.png) no-repeat 4px;
+}
+
+.iconServiceDefinition, .iconCSV, .iconShapefile {
+  background: url(./images/ServiceDefinition.png) no-repeat 4px;
+}
+
+.iconWebMappingApplication {
+  background: url(./images/WebMappingApplication.png) no-repeat 4px;
+}
+
+#sourceListController .dijitButtonContents {
+  font-weight: bolder;
+}
+
+.listCounts {
+  float: right;
+  color: silver;
+  font-size: smaller;
+  font-style: italic;
+  font-weight: bolder;
+}
+
+.dijitDialogTitleBar, .dijitDialogTitle, .dijitButtonNode {
+  color: white !important;
+  background: #222 !important;
+  border: none !important;
+}
+
+.dijitButtonNode:hover {
+  background: #111 !important;
+}
+
+.dijitTooltipContainer, .dijitDialog, .dijitDialogPaneContent, .esriSignInDialog {
+  color: silver !important;
+  background: #333 !important;
+  border-color: #444 !important;
+}
+
+.dijitTooltipContainer {
+  border-width: 2px !important;
+}
+
+.dijitTooltipConnector {
+  background-image: url(./images/tooltip.png) !important;
+}
+
+.dijitDialogPaneActionBar {
+  background: #555 !important;
+  border-color: #555 !important;
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>ArcGIS Portal Item Information</title>
+    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.6/js/dojo/resources/dojo.css">
+    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.6/js/dojo/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.6/js/dgrid/css/dgrid.css">
+    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.6/js/dgrid/css/skins/claro.css">
+    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.6/js/esri/css/esri.css"/>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script type="text/javascript">
+      var dojoConfig = {
+        parseOnLoad: true
+      };
+    </script>
+    <script type="text/javascript" src="//js.arcgis.com/3.6/"></script>
+    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript">
+      require([
+        "dijit/layout/BorderContainer",
+        "dijit/layout/StackContainer",
+        "dijit/layout/StackController",
+        "dijit/layout/ContentPane",
+        "dijit/Toolbar",
+        "dijit/form/Select"
+      ]);
+    </script>
+  </head>
+  <body class="claro">
+    <div id="mainContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false">
+      <div id="topToolbar" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
+        <span id="loggedInUser"></span>
+
+        <div id="appTitle">ArcGIS Portal Item Information</div>
+      </div>
+      <div id="typeContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'left',gutters:false,splitter:true">
+        <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px'}">
+          <span id="sourceListController" data-dojo-type="dijit/layout/StackController" data-dojo-props="containerId:'sourceListsContainer'"></span>
+        </div>
+        <div id="sourceListsContainer" data-dojo-type="dijit/layout/StackContainer" data-dojo-props="region:'center'">
+          <div id="sourceFoldersList" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Folders'"></div>
+          <div id="sourceGroupList" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Groups'"></div>
+        </div>
+      </div>
+      <div id="listContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
+        <div id="actionToolbar" data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top'">
+          <div id="actionBar">
+            <label for="sourceItemsFilterInput" style="font-weight:bolder;">Title:&nbsp;</label>
+            <input id="sourceItemsFilterInput" type="text" data-dojo-type="dijit/form/TextBox" data-dojo-props="trim:true,intermediateChanges:true,placeHolder:'...no title filter...',style:{width:'200px'}"/>
+            <label for="itemTypeSelect" style="font-weight:bolder;">Type:&nbsp;</label>
+            <select id="itemTypeSelect" data-dojo-type="dijit/form/Select" data-dojo-props="style:{width:'250px'}"></select>
+            <div id="exportBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'exportIcon',title:'Export'"></div>
+            <div id="sourceItemsCount" style="font-weight:bolder;"></div>
+          </div>
+        </div>
+        <div id="sourceItemList" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
+      </div>
+    </div>
+  </body>
+</html>
