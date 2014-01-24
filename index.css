@@ -1,306 +1,301 @@
 html, body, #mainContainer {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  font-family: "helvetica", sans-serif;
-  background-color: silver;
+  height           : 100%;
+  width            : 100%;
+  margin           : 0;
+  padding          : 0;
+  font-family      : "helvetica", sans-serif;
+  background-color : silver;
 }
 
 .dijitSplitterVHover {
-  background-image: -moz-linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
-  background-image: -webkit-linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
-  background-image: -o-linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
-  background-image: linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
+  background-image : -moz-linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
+  background-image : -webkit-linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
+  background-image : -o-linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
+  background-image : linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
 }
 
 .dijitSplitterVActive, .dijitSplitterVHover {
-  background-color: #333 !important;
+  background-color : #333 !important;
 }
 
 .dijitSplitterVHover .dijitSplitterThumb {
-  background-color: white !important;
+  background-color : white !important;
 }
 
 #topToolbar {
-  height: 20px;
-  padding: 15px;
-  vertical-align: middle;
-  overflow: hidden;
-  color: white;
-  background-color: #555;
-  border-bottom: solid 1px #555;
+  height           : 20px;
+  padding          : 15px;
+  vertical-align   : middle;
+  overflow         : hidden;
+  color            : white;
+  background-color : #555;
+  border-bottom    : solid 1px #555;
 }
 
 #appTitle {
-  font-weight: bolder;
-  font-size: larger;
+  font-weight : bolder;
+  font-size   : larger;
 }
 
 #loggedInUser {
-  float: right;
-  font-style: italic;
+  float      : right;
+  font-style : italic;
 }
 
 #typeContainer, #listContainer {
-  width: 30%;
-  margin: 20px;
-  border-radius: 10px;
-  border: solid 1px silver;
+  width         : 30%;
+  margin        : 20px;
+  border-radius : 10px;
+  border        : solid 1px silver;
 }
 
 .dijitToolbar {
-  background-color: #ccc !important;
+  background-color : #ccc !important;
 }
 
 #actionBar {
-  margin: 10px;
+  margin : 10px;
 }
 
 #sourceItemsCount {
-  float: right;
-  padding: 8px;
-  color: #555;
-  font-size: smaller;
-  font-style: italic;
-  font-weight: bolder;
-  border-radius: 6px;
+  float         : right;
+  padding       : 8px;
+  color         : #555;
+  font-size     : smaller;
+  font-style    : italic;
+  font-weight   : bolder;
+  border-radius : 6px;
 }
 
 .searching {
-  padding-right: 25px !important;
-  color: white !important;
-  background: #555 url(./images/loadingAnimation.gif) no-repeat right !important;
+  padding-right : 25px !important;
+  color         : white !important;
+  background    : #555 url(./images/loadingAnimation.gif) no-repeat right !important;
 }
 
 .placeHolder {
-  font-weight: normal;
-  color: #AAAAAA;
-  font-style: italic;
+  font-weight : normal;
+  color       : #AAAAAA;
+  font-style  : italic;
 }
 
 .exportIcon {
-  width: 16px;
-  height: 16px;
-  margin-left: 10px;
-  background: url(./images/export.png) no-repeat;
+  width       : 16px;
+  height      : 16px;
+  margin-left : 10px;
+  background  : url(./images/export.png) no-repeat;
 }
 
 :focus {
-  outline: none !important;
+  outline : none !important;
 }
 
 .dijitToggleButton .dijitButtonNode {
-  font-weight: normal !important;
-  color: #555 !important;
+  font-weight : normal !important;
+  color       : #555 !important;
 
 }
 
 .dijitToggleButtonChecked .dijitButtonNode {
-  font-weight: bolder !important;
-  font-style: italic;
-  color: #111 !important;
-  border-color: silver !important;
-  border-radius: 10px !important;
+  font-weight   : bolder !important;
+  font-style    : italic;
+  color         : #111 !important;
+  border-color  : silver !important;
+  border-radius : 10px !important;
 
 }
 
 .dijitToggleButtonHover .dijitButtonNode, .dijitToggleButtonActive .dijitButtonNode {
-  background-color: silver !important;
-  border-color: gray !important;
-  border-radius: 10px !important;
+  background-color : silver !important;
+  border-color     : gray !important;
+  border-radius    : 10px !important;
+}
+
+#sourceListsContainer .dijitContentPane, #listContainer .dijitContentPane {
+  margin  : 0 !important;
+  padding : 0 !important;
 }
 
 .dgrid {
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
-  border: none !important;
-  margin: 0 auto 0 auto !important;
-}
-
-.dgrid-scroller {
-  position: relative !important;
-  height: 100%;
-  outline: none !important;
+  width  : 100% !important;
+  height : 100% !important;
+  /*padding : 0 !important;
+  margin  : 0 auto 0 auto !important;*/
+  border : none !important;
 }
 
 #listContainer .dgrid-header, #listContainer .dgrid-header-scroll {
-  min-height: 2.0em !important;
-  border-bottom: solid 1px silver;
+  /*min-height    : 2.0em !important;*/
+  border-bottom : solid 1px silver;
 }
 
 .dgrid-header, .dgrid-header:hover, .dgrid-header-scroll, .dgrid-cell[role="columnheader"]:hover {
-  background: none !important;
-}
-
-.dgrid-hider-toggle {
-  height: 2.0em !important;
-  line-height: 2.0em;
-  font-weight: bolder !important;
+  background : none !important;
 }
 
 .dgrid-hider-menu {
-  border-color: gray !important;
+  border-color : gray !important;
 }
 
 .dgrid-no-data, .dgrid-loading {
-  color: gray;
-  font-size: 1.5em;
-  padding: 1.5em;
-  text-align: center;
+  color      : gray;
+  font-size  : 1.5em;
+  padding    : 1.5em;
+  text-align : center;
 }
 
 .dgrid-row {
-  cursor: pointer;
-  line-height: 1em;
-  padding: 1em 0 1em 26px;
-  border-bottom: solid 1px silver;
+  cursor        : pointer;
+  line-height   : 1em;
+  padding       : 0.75em 0 0.75em 26px;
+  border-bottom : solid 1px silver;
 }
 
 #sourceItemList .dgrid-row:hover {
-  background: #ddd !important;
+  background : #ddd !important;
+}
+
+.descNode {
+  max-height : 3em;
+  overflow   : auto !important;
 }
 
 .dgrid-cell {
-  border: none !important;
+  height         : 2em;
+  border         : none !important;
+  vertical-align : middle;
 }
 
 .dgrid-cell[role="columnheader"] {
-  padding: 5px !important;
-  border-right: solid 1px silver !important;
-}
-
-.dgrid-cell-padding {
-  padding: 0 !important;
-}
-
-.dgrid-hider-toggle {
-  padding: 3px !important;
+  padding-left : 10px;
+  border-right : solid 1px silver !important;
 }
 
 .field-thumbnailUrl {
-  width: 150px;
-  text-align: center;
+  width      : 150px;
+  text-align : center;
 }
 
 .groupItem {
-  background: url(./images/Group.png) no-repeat 4px !important;
+  background : url(./images/Group.png) no-repeat 4px !important;
 }
 
 .rootFolder {
-  font-style: italic !important;
+  font-style : italic !important;
 }
 
 .folderItem {
-  background: url(./images/Folder16.png) no-repeat 4px !important;
+  background : url(./images/Folder16.png) no-repeat 4px !important;
+}
+
+.tagItem {
+  background : url(./images/GenericTag16.png) no-repeat 4px !important;
 }
 
 .itemThumbnail {
-  max-height: 40px;
-  border: solid 1px silver;
+  max-height : 40px;
+  border     : solid 1px silver;
 }
 
 .dgrid-selected {
-  font-weight: bolder !important;
-  background-color: #ddd !important;
+  font-weight      : bolder !important;
+  background-color : #ddd !important;
 }
 
 .dgrid-selected.folderItem {
-  background-image: url(./images/FolderOpenState16.png) !important;
+  background-image : url(./images/FolderOpenState16.png) !important;
 }
 
 .iconItem {
-  padding-left: 24px !important;
+  padding-left : 24px !important;
 }
 
 .iconWebMap {
-  background: url(./images/WebMap.png) no-repeat 4px;
+  background : url(./images/WebMap.png) no-repeat 4px;
 }
 
 .iconExplorerMap, .iconOperationView, .iconMapPackage {
-  background: url(./images/MapPackage.png) no-repeat 4px;
+  background : url(./images/MapPackage.png) no-repeat 4px;
 }
 
 .iconMapService, .iconFeatureService, .iconImageService, .iconKML, .iconWMS {
-  background: url(./images/MapService.png) no-repeat 4px;
+  background : url(./images/MapService.png) no-repeat 4px;
 }
 
 .iconGeoprocessingService, .iconNetworkAnalysisService {
-  background: url(./images/GeoprocessingService.png) no-repeat 4px;
+  background : url(./images/GeoprocessingService.png) no-repeat 4px;
 }
 
 .iconLayerPackage {
-  background: url(./images/LayerPackage.png) no-repeat 4px;
+  background : url(./images/LayerPackage.png) no-repeat 4px;
 }
 
 .iconCodeSample, .iconOperationsDashboardAddIn, .iconExplorerAddIn, .iconCodeAttachment, .iconDesktopApplicationTemplate {
-  background: url(./images/CodeSample.png) no-repeat 4px;
+  background : url(./images/CodeSample.png) no-repeat 4px;
 }
 
 .iconServiceDefinition, .iconCSV, .iconShapefile {
-  background: url(./images/ServiceDefinition.png) no-repeat 4px;
+  background : url(./images/ServiceDefinition.png) no-repeat 4px;
 }
 
 .iconWebMappingApplication {
-  background: url(./images/WebMappingApplication.png) no-repeat 4px;
+  background : url(./images/WebMappingApplication.png) no-repeat 4px;
 }
 
 #sourceListController .dijitButtonContents {
-  font-weight: bolder;
+  font-weight : bolder;
 }
 
-
 .esriSignInDialog {
-  border: solid 1px #555 !important;
-  border-radius: 6px;
-  color: #eee !important;
+  border        : solid 1px #555 !important;
+  border-radius : 6px;
+  color         : #eee !important;
 }
 
 .esriSignInDialog .dijitDialogTitleBar {
-  border: none !important;
-  background: #444 none !important;
-  border: none !important;
-  border-radius: 4px 4px 0 0;
+  border        : none !important;
+  background    : #444 none !important;
+  border        : none !important;
+  border-radius : 4px 4px 0 0;
 }
 
 .esriSignInDialog .dijitDialogTitle {
-  color: #eee;
-  font-weight: bolder !important;
+  color       : #eee;
+  font-weight : bolder !important;
 }
 
 .esriSignInDialog .dijitDialogPaneContent {
-  border: none !important;
-  background-color: #444 !important;
-  border-radius: 0 0 4px 4px;
+  border           : none !important;
+  background-color : #444 !important;
+  border-radius    : 0 0 4px 4px;
 }
 
 .esriSignInDialog .dijitDialogPaneContentArea {
-  background-color: #333 !important;
-  border: none !important;
+  background-color : #333 !important;
+  border           : none !important;
 }
 
 .esriSignInDialog .dijitDialogPaneActionBar {
-  background-color: #666 !important;
-  border: none !important;
-  border-radius: 0 0 4px 4px;
+  background-color : #666 !important;
+  border           : none !important;
+  border-radius    : 0 0 4px 4px;
 }
 
 .esriSignInDialog .dijitButtonNode {
-  background: #333 !important;
-  border-color: #444 !important;
+  background   : #333 !important;
+  border-color : #444 !important;
 }
 
 .esriSignInDialog .dijitButtonNode:hover {
-  box-shadow: 0 0 5px #222;
+  box-shadow : 0 0 5px #222;
 }
 
 .esriSignInDialog .dijitButtonText {
-  color: #ccc !important;
+  color : #ccc !important;
 }
 
 .esriSignInDialog .dijitButtonText:hover {
-  color: #eee !important;
+  color : #eee !important;
 }
 
 /*
