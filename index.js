@@ -303,7 +303,8 @@ require([
 
     // RENDER TAG ROW //
     function renderTagRow(object, options) {
-      return put("div.tagItem", lang.replace("{tag} ({count})", object));
+      //return put("div.tagItem", lang.replace("{tag} ({count})", object));
+      return put("div.tagItem", lang.replace("{tag}", object));
     }
 
     // FORMAT DATES VALUES //
@@ -363,6 +364,28 @@ require([
       };
       dom.byId('sourceItemsCount').innerHTML = lang.replace('{display} of {store}', counts);
       registry.byId('exportBtn').set('disabled', (results.total === 0));
+
+      updateGalleryView();
+    }
+
+    function updateGalleryView() {
+
+      var results = sourceItemList.store.query(sourceItemList.query, {sort: sourceItemList._getSort()});
+
+      var galleryContent = put('div.galleryContent');
+      array.forEach(results, lang.hitch(this, function (result) {
+        var galleryItemNode = put(galleryContent, 'div.galleryItem', {
+          onclick: lang.hitch(this, function () {
+            displayItemInAGOL(result);
+          })
+        });
+        var itemClass = result.type.replace(/ /g, '');
+        put(galleryItemNode, "div.galleryItemTitle.icon" + itemClass, result.title);
+        put(galleryItemNode, 'img.galleryItemThumbnail', {src: result.thumbnailUrl || "./images/GenericEmpty32.png"});
+      }));
+
+
+      registry.byId('sourceItemGallery').set('content', galleryContent);
     }
 
     // UPDATE TYPE LIST //
@@ -540,7 +563,7 @@ require([
       }
       portalGroup.queryItems(queryParams).then(lang.hitch(this, function (response) {
         allResults = allResults.concat(response.results);
-        if(response.nextQueryParams.start > -1) {
+        if(response.nextQueryParams.start > 0) {
           searchGroupItems(portalGroup, response.nextQueryParams, allResults).then(deferred.resolve, deferred.reject);
         } else {
           deferred.resolve(allResults);
@@ -566,7 +589,7 @@ require([
       }
       portalUser.portal.queryItems(queryParams).then(lang.hitch(this, function (response) {
         allResults = allResults.concat(response.results);
-        if(response.nextQueryParams.start > -1) {
+        if(response.nextQueryParams.start > 0) {
           searchTagItems(response.nextQueryParams, allResults).then(deferred.resolve, deferred.reject);
         } else {
           deferred.resolve(allResults);
@@ -577,8 +600,8 @@ require([
     }
 
     // DISPLAY ITEM IN ARCGIS.COM - WILL REQUIRE SIGN-IN //
-    function displayItemInAGOL(list, evt) {
-      var item = list.row(evt).data;
+    function displayItemInAGOL(listOrItem, evt) {
+      var item = (listOrItem.row) ? listOrItem.row(evt).data : listOrItem;
       var agsDetailsUrl = lang.replace("{0}//{1}.{2}/home/item.html?id={3}", [document.location.protocol, portalUser.portal.urlKey, portalUser.portal.customBaseUrl, item.id]);
       window.open(agsDetailsUrl);
     }
@@ -587,17 +610,19 @@ require([
     function exportItemList() {
 
       // CREATE LIST OF COLUMN TEMPLATES //
-      var fieldsTemplateParts = array.filter(sourceItemList.columns,function (column) {
-        // ONLY USE VISIBLE COLUMNS //
-        return (!sourceItemList.isColumnHidden(column.id));
-      }).map(function (visibleColumn) {
-            // CHECK CUSTOM COLUMN ATTRIBUTE //
-            return (visibleColumn.needsQuotes) ? '"{' + visibleColumn.field + '}"' : '{' + visibleColumn.field + '}'
-          });
-      // JOIN USING DELIMITER TO CREATE COLUMN TEMPLATE //
+      var fieldsTemplateParts = [];
+      for (var columnId in sourceItemList.columns) {
+        var column = sourceItemList.columns[columnId];
+        if(!sourceItemList.isColumnHidden(column.id)) {
+          var columnTemplate = (column.needsQuotes) ? '"{' + column.field + '}"' : '{' + column.field + '}';
+          fieldsTemplateParts.push(columnTemplate);
+        }
+      }
+      // JOIN USING DELIMITER TO CREATE COLUMNS TEMPLATE //
       var fieldsTemplate = fieldsTemplateParts.join(',');
 
-      // GET FULL LIST OF ITEMS DIRECTLY FROM STORE //
+      // GET LIST OF ITEMS DIRECTLY FROM STORE //
+      // BUT BASED ON CURRENT QUERY AND SORT   //
       var results = sourceItemList.store.query(sourceItemList.query, {sort: sourceItemList._getSort()});
       // GET ARRAY OF VALUES BASED ON COLUMN TEMPLATE //
       var csvParts = results.map(function (result) {
@@ -618,7 +643,7 @@ require([
 
       // DISPLAY CSV CONTENT IN DIALOG //
       var exportDialog = new Dialog({
-        title: lang.replace("Export Results: {length} items", results),
+        title: lang.replace("Results To CSV: {length} items", results),
         content: csvContentNode
       });
       exportDialog.show();
