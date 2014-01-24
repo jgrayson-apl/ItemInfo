@@ -79,7 +79,7 @@ html, body, #mainContainer {
   width         : 120px;
   height        : 110px;
   border-radius : 6px;
-  box-shadow    : 0 0 6px gray;
+  box-shadow    : 0 0 3px gray;
 }
 
 .galleryItem:hover {
@@ -88,11 +88,12 @@ html, body, #mainContainer {
 }
 
 .galleryItemThumbnail {
-  width      : 100px;
-  height     : 66px;
-  margin     : 5px;
-  padding    : 3px;
-  box-shadow : 0 0 3px gray;
+  width         : 100px;
+  height        : 66px;
+  margin        : 5px;
+  padding       : 4px;
+  border-radius : 4px;
+  box-shadow    : 0 0 2px gray;
 }
 
 .galleryItemTitle {

@@ -63,7 +63,7 @@ require([
           data: []
         })),
         loadingMessage: "Loading folders...",
-        noDataMessage: "ArcGIS.com Folders",
+        noDataMessage: "User Folders",
         selectionMode: "single",
         allowTextSelection: false,
         renderRow: renderFolderRow
@@ -77,7 +77,7 @@ require([
           data: []
         })),
         loadingMessage: "Loading groups...",
-        noDataMessage: "ArcGIS.com Groups",
+        noDataMessage: "User Groups",
         selectionMode: "single",
         allowTextSelection: false,
         renderRow: renderGroupRow
@@ -123,7 +123,6 @@ require([
       // EXPORT ITEM LIST //
       on(registry.byId('exportBtn'), 'click', exportItemList);
 
-
       // SIGN IN //
       portal.signIn().then(lang.hitch(this, function (user) {
         portalUser = user;
@@ -168,9 +167,9 @@ require([
         });
 
       }));
-
     }));
 
+    // GET ARRAY OF COLUMNS //
     function getColumns() {
       var columns = [];
       columns.push({
@@ -368,8 +367,10 @@ require([
       updateGalleryView();
     }
 
+    // UPDATE GALLERY VIEW //
     function updateGalleryView() {
 
+      // GET ALL RESULTS BASED ON QUERY AND SORT //
       var results = sourceItemList.store.query(sourceItemList.query, {sort: sourceItemList._getSort()});
 
       var galleryContent = put('div.galleryContent');
@@ -381,7 +382,7 @@ require([
         });
         var itemClass = result.type.replace(/ /g, '');
         put(galleryItemNode, "div.galleryItemTitle.icon" + itemClass, result.title);
-        put(galleryItemNode, 'img.galleryItemThumbnail', {src: result.thumbnailUrl || "./images/GenericEmpty32.png"});
+        put(galleryItemNode, 'img.galleryItemThumbnail', {src: result.thumbnailUrl || "./images/no_preview.gif"});
       }));
 
       registry.byId('sourceItemGallery').set('content', galleryContent);
@@ -429,14 +430,6 @@ require([
       registry.byId('sourceItemGallery').set('content', ""); //"<span class='dgrid-no-data'>No items found</span>");
     }
 
-    // UPDATE SOURCE ITEM LIST WITH NEW STORE //
-    function updateSourceItemList(store) {
-      registry.byId('sourceItemsFilterInput').set('value', "");
-      updateTypeList(store.data);
-      sourceItemList.set('store', store, {}, {count: 1000, sort: 'title'});
-      domClass.remove('sourceItemsCount', 'searching');
-    }
-
     // SOURCE FOLDER ITEM SELECTED //
     function sourceFolderSelected(evt) {
       sourceGroupsList.clearSelection();
@@ -474,6 +467,14 @@ require([
       if(userTag) {
         getTagsItemStore(userTag).then(updateSourceItemList);
       }
+    }
+
+    // UPDATE SOURCE ITEM LIST WITH NEW STORE //
+    function updateSourceItemList(store) {
+      registry.byId('sourceItemsFilterInput').set('value', "");
+      updateTypeList(store.data);
+      sourceItemList.set('store', store, {}, {count: 1000, sort: 'title'});
+      domClass.remove('sourceItemsCount', 'searching');
     }
 
 
@@ -519,6 +520,7 @@ require([
       return deferred.promise;
     }
 
+     // GET ITEM STORE BASED ON USER TAG //
     function getTagsItemStore(userTag) {
       var deferred = new Deferred();
 
