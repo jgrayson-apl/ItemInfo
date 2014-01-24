@@ -384,7 +384,6 @@ require([
         put(galleryItemNode, 'img.galleryItemThumbnail', {src: result.thumbnailUrl || "./images/GenericEmpty32.png"});
       }));
 
-
       registry.byId('sourceItemGallery').set('content', galleryContent);
     }
 
@@ -426,8 +425,8 @@ require([
       updateTypeList([]);
       sourceGroupsList.clearSelection();
       sourceFoldersList.clearSelection();
-      //var emptyStore = new Observable(new Memory({data: []}));
       sourceItemList.set('store', null, {}, {count: 1000, sort: 'title'});
+      registry.byId('sourceItemGallery').set('content', ""); //"<span class='dgrid-no-data'>No items found</span>");
     }
 
     // UPDATE SOURCE ITEM LIST WITH NEW STORE //
