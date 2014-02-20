@@ -61,11 +61,11 @@ html, body, #mainContainer {
 
 #typeContainer {
   width  : 500px;
-  margin : 20px 8px 20px 20px;
+  margin : 10px 4px 10px 10px;
 }
 
 #listContainer {
-  margin : 20px 20px 20px 8px;
+  margin : 10px 10px 10px 4px;
 }
 
 #typeContainer, #listContainer {
@@ -106,6 +106,12 @@ html, body, #mainContainer {
 
 #expandoImage.expand {
   background : url(./images/GenericMore16.png) no-repeat top left !important;
+}
+
+#sourceItemsController span[widgetid="sourceItemsController_tagEditorPane"] {
+  border-left  : solid 1px #333 !important;
+  margin-left  : 15px;
+  padding-left : 15px;
 }
 
 #sourceItemGallery {
@@ -679,4 +685,28 @@ html, body, #mainContainer {
   border-color: #333 !important;
 }
 */
+
+.access {
+  float         : right;
+  font-size     : x-small;
+  color         : #999;
+  padding-right : 10px;
+}
+
+.notInPortal {
+  text-decoration-line : line-through !important;
+}
+
+.access-public {
+  color : #333;
+}
+
+.access-org {
+  color : #666;
+}
+
+.access-private {
+  color : #999;
+}
+
 

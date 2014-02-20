@@ -110,11 +110,11 @@ require([
         store: new Observable(new Memory({
           data: []
         })),
-        selectionMode: "single",
-        renderRow: renderTagRow,
         loadingMessage: "Loading tags...",
         noDataMessage: "User Tags",
-        allowTextSelection: true
+        selectionMode: "single",
+        allowTextSelection: true,
+        renderRow: renderTagRow
       }, "sourceTagList");
       sourceTagsList.startup();
       sourceTagsList.on("dgrid-select", sourceTagSelected);
@@ -177,7 +177,7 @@ require([
       // OPTIONS STACK CONTAINER CHILD SELECTED //
       connect.connect(registry.byId('optionsContainer'), 'selectChild', lang.hitch(this, function (selectedChild) {
 
-        var checked = ((selectedChild.title === "Tags") || (selectedChild.title === "Counts"));
+        var checked = ((selectedChild.title === "Tag Editor") || (selectedChild.title === "Counts"));
         registry.byId('userOwnedChk').set('checked', checked);
         registry.byId('userOwnedChk').set('disabled', checked);
 
@@ -268,9 +268,9 @@ require([
         portalUser.getGroups().then(function (groups) {
 
           /*var favoritesGroup = {
-            id: portalUser.favGroupId,
-            title: "Favorites"
-          };*/
+           id: portalUser.favGroupId,
+           title: "Favorites"
+           };*/
 
           // GROUPS STORE //
           var groupStore = new Observable(new Memory({
@@ -764,8 +764,9 @@ require([
     // RENDER GROUP ROW //
     function renderGroupRow(object, options) {
       var itemNode = put("div");
+      put(itemNode, "div.access", object.access);
       put(itemNode, "div.groupItem.listItem", object.title);
-      put(itemNode, 'div.itemDetails', object.id);
+      put(itemNode, 'div.itemDetails', lang.replace("{owner} | {id}", object));
       return itemNode;
     }
 

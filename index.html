@@ -46,11 +46,11 @@
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Folders',iconClass:'folderItem'">
             <div id="sourceFoldersList"></div>
           </div>
-          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Groups',iconClass:'groupItem'">
-            <div id="sourceGroupList"></div>
-          </div>
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Tags',iconClass:'tagItem'">
             <div id="sourceTagList"></div>
+          </div>
+          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Groups',iconClass:'groupItem'">
+            <div id="sourceGroupList"></div>
           </div>
           <div id="searchPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Search',iconClass:'searchItem'">
             <div id="searchParametersPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top',splitter:true,style:{height:'25%'}">
@@ -102,7 +102,7 @@
               <textarea id="csvTextArea" data-dojo-type="dijit/form/Textarea" style="width:100%;"></textarea>
             </div>
           </div>
-          <div id="tagEditorPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Tags',iconClass:'tagEditorIcon',gutters:false">
+          <div id="tagEditorPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Tag Editor',iconClass:'tagEditorIcon',gutters:false">
             <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'left',gutters:false,splitter:true,style:{width:'60%'}">
               <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
                 <label style="font-weight: bolder;">Items:</label>
@@ -118,6 +118,7 @@
             <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
               <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
                 <label style="font-weight: bolder;">Tags:</label>
+                <!--<div id="splitTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'splitTagIcon',label:'Split Tags',title:'Split tags'"></div>-->
                 <div id="replaceTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'replaceTagIcon',label:'Replace Tag',title:'Replace tag from selected items'"></div>
                 <div id="removeTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'removeTagIcon',label:'Remove Tag',title:'Remove tag from selected items'"></div>
               </div>
