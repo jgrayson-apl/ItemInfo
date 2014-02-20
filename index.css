@@ -22,19 +22,36 @@ html, body, #mainContainer {
   background-color : white !important;
 }
 
+.actionNode {
+  background-color : ghostwhite;
+  border           : solid 1px silver;
+  padding          : 3px;
+  border-radius    : 3px;
+}
+
+.actionImg {
+  width          : 16px;
+  height         : 16px;
+  margin         : 0 3px 0 3px;
+  vertical-align : middle;
+  cursor         : pointer;
+}
+
 #topToolbar {
   height         : 20px;
   padding        : 15px 15px 15px 50px;
   vertical-align : middle;
   overflow       : hidden;
   color          : white;
-  border-bottom  : solid 1px #555;
-  background     : #555 url(./images/GenericSearch32.png) no-repeat 10px;
+  text-shadow    : 1px 1px 0 black;
+  background     : #555 url(./images/AGSItem32.png) no-repeat 10px;
+  box-shadow     : inset 0 0 10px silver;
 }
 
 #appTitle {
   font-weight : bolder;
   font-size   : larger;
+  text-shadow : 1px 1px 0 black;
 }
 
 #loggedInUser {
@@ -43,25 +60,52 @@ html, body, #mainContainer {
 }
 
 #typeContainer {
-  margin : 20px 10px 20px 20px;
+  width  : 500px;
+  margin : 20px 8px 20px 20px;
 }
 
 #listContainer {
-  margin : 20px 20px 20px 10px;
+  margin : 20px 20px 20px 8px;
 }
 
 #typeContainer, #listContainer {
-  width         : 25%;
-  border-radius : 6px;
-  border        : solid 1px silver;
+  border-radius    : 6px;
+  border           : solid 1px silver;
+  background-color : white;
+}
+
+#detailsPane {
+  padding : 0 !important;
+}
+
+.panelInfo {
+  height           : 1.5em !important;
+  padding          : 0.5em 10px 0.5em 10px !important;
+  color            : white;
+  text-shadow      : 1px 1px 0 black;
+  background-color : #444;
+  border           : solid 3px white;
+  box-shadow       : inset 0 0 5px silver;
 }
 
 .dijitToolbar {
   background-color : #ccc !important;
 }
 
-#actionBar {
+.actionBar {
   margin : 10px;
+}
+
+#expandoImage {
+  cursor     : pointer;
+  width      : 16px;
+  height     : 16px;
+  float      : right;
+  background : url(./images/GenericLess16.png) no-repeat top right;
+}
+
+#expandoImage.expand {
+  background : url(./images/GenericMore16.png) no-repeat top left !important;
 }
 
 #sourceItemGallery {
@@ -69,7 +113,7 @@ html, body, #mainContainer {
 }
 
 .galleryContent {
-  padding : 20px;
+  padding : 15px;
 }
 
 .galleryItem {
@@ -79,7 +123,7 @@ html, body, #mainContainer {
   width         : 120px;
   height        : 110px;
   border-radius : 6px;
-  box-shadow    : 0 0 3px gray;
+  box-shadow    : 0 0 3px silver;
 }
 
 .galleryItem:hover {
@@ -87,24 +131,36 @@ html, body, #mainContainer {
   box-shadow : 0 0 15px #444;
 }
 
+.galleryItemTitle {
+  height              : 1.5em;
+  font-size           : smaller;
+  font-weight         : bolder;
+  color               : #666;
+  white-space         : nowrap;
+  overflow            : hidden;
+  text-overflow       : ellipsis;
+  padding-left        : 20px;
+  background-position : 0 0 !important;
+}
+
+/*
+.galleryItemType {
+  position            : absolute;
+  background-position : 0 0 !important;
+  width               : 16px;
+  height              : 16px;
+  z-index             : 99;
+  box-shadow          : 0 0 16px white;
+}
+*/
+
 .galleryItemThumbnail {
   width         : 100px;
   height        : 66px;
   margin        : 5px;
   padding       : 4px;
   border-radius : 4px;
-  box-shadow    : 0 0 2px gray;
-}
-
-.galleryItemTitle {
-  height              : 25px;
-  padding-left        : 24px;
-  font-size           : smaller;
-  color               : #555;
-  white-space         : nowrap;
-  overflow            : hidden;
-  text-overflow       : ellipsis;
-  background-position : top left !important;
+  box-shadow    : 0 0 2px #444;
 }
 
 #sourceItemsCount {
@@ -116,10 +172,75 @@ html, body, #mainContainer {
   border-radius : 6px;
 }
 
+#searchPane {
+  background-color : white;
+}
+
+#searchQueryString {
+  margin           : 5px;
+  padding          : 15px;
+  font-weight      : bolder;
+  border           : dashed 1px silver;
+  background-color : ghostwhite;
+}
+
+#searchQueryResultCount {
+  /*float       : right;*/
+  color       : darkgreen;
+  font-weight : bolder;
+  text-align  : center;
+  margin      : 10px;
+}
+
+#parameterListPane {
+  overflow : auto;
+  border   : solid 2px #444;
+}
+
+.parameterLabelNode {
+  font-size   : smaller;
+  font-weight : bolder;
+}
+
+#parameterListPane .dijitTitlePaneContentInner {
+  padding : 0 !important;
+}
+
+.parameterDescNode {
+  padding          : 5px;
+  color            : #555;
+  font-size        : smaller;
+  background-color : ghostwhite;
+  border-bottom    : solid 1px silver;
+}
+
+.parameterInputsNode {
+  margin : 20px;
+}
+
+.addParameterIcon {
+  background : url(./images/AddParameter16.png) no-repeat 6px !important;
+}
+
+.paramButtonNode {
+  margin : 10px;
+}
+
+.paramQuery {
+  float            : left;
+  margin           : 5px;
+  padding          : 10px;
+  background-color : ghostwhite;
+  border           : solid 1px silver;
+  border-radius    : 5px;
+  box-shadow       : 0 0 5px silver;
+}
+
 .searching {
   padding-right : 25px !important;
   color         : white !important;
   background    : #555 url(./images/loadingAnimation.gif) no-repeat right !important;
+  box-shadow    : inset 0 0 5px silver;
 }
 
 .placeHolder {
@@ -128,27 +249,21 @@ html, body, #mainContainer {
   font-style  : italic;
 }
 
-.exportIcon {
-  background : url(./images/export.png) no-repeat 4px;
-}
-
 :focus {
   outline : none !important;
 }
 
 .dijitToggleButton .dijitButtonNode {
   font-weight : normal !important;
-  color       : #555 !important;
+  /*color       : #555 !important;*/
 
 }
 
 .dijitToggleButtonChecked .dijitButtonNode {
   font-weight   : bolder !important;
   font-style    : italic;
-  color         : #111 !important;
   border-color  : silver !important;
   border-radius : 10px !important;
-
 }
 
 .dijitToggleButtonHover .dijitButtonNode, .dijitToggleButtonActive .dijitButtonNode {
@@ -157,22 +272,275 @@ html, body, #mainContainer {
   border-radius    : 10px !important;
 }
 
-#sourceListsContainer .dijitContentPane, #listContainer .dijitContentPane {
+#sourceListsContainer .dijitContentPane, #listContainer .dijitContentPane[region="center"] {
   margin  : 0 !important;
   padding : 0 !important;
 }
 
+#optionsContainer {
+  background-color : ghostwhite;
+}
+
+#tagEditorPane, #syncCountsPane {
+  /*margin        : 30px;
+  border        : solid 2px #777 !important;
+  box-shadow    : 0 0 10px #888;
+  border-radius : 3px;*/
+}
+
+#tagEditorPane .dijitContentPane, #syncCountsPane .dijitContentPane {
+  margin  : 0 !important;
+  padding : 0 !important;
+}
+
+.tagEditorDialogContentArea {
+  width   : 450px;
+  height  : 50px;
+  padding : 25px !important;
+}
+
+.tagEditorDialogContentArea .dijitTextBox {
+  width : 100%;
+}
+
+.actionMessageNode {
+  float          : left;
+  vertical-align : middle;
+  color          : gray;
+  font-style     : italic;
+  font-size      : smaller;
+}
+
+.optionLabel {
+  padding     : 10px;
+  font-size   : larger;
+  font-weight : bolder;
+}
+
+.selectAllIcon {
+  background : url(./images/Select_All.png) no-repeat 4px !important;
+}
+
+.selectNoneIcon {
+  background : url(./images/Select_None.png) no-repeat 4px !important;
+}
+
+.dijitDisabled .selectNoneIcon {
+  background : url(./images/Select_NoneDisabled.png) no-repeat 4px !important;
+}
+
+.descNode {
+  max-height : 3em;
+  overflow   : auto !important;
+}
+
+.field-thumbnailUrl {
+  width      : 150px;
+  text-align : center;
+}
+
+.dijitIcon {
+  width  : 22px;
+  height : 22px;
+}
+
+.listItem {
+  padding-left : 26px !important;
+}
+
+.itemDetails {
+  display    : none;
+  color      : gray !important;
+  font-size  : small;
+  clear      : both;
+  text-align : right;
+  width      : 100%;
+}
+
+.dgrid-selected .itemDetails {
+  display : inline-block;
+}
+
+.rootFolder {
+  font-style : italic !important;
+}
+
+.folderItem {
+  background : url(./images/Folder16.png) no-repeat 4px !important;
+}
+
+.tagItem {
+  background : url(./images/GenericTag16.png) no-repeat 4px !important;
+}
+
+.favoriteItem {
+  background : url(./images/yellow-star.png) no-repeat 4px !important;
+}
+
+.selectableTagItem {
+  padding : 3px !important;
+}
+
+.groupItem {
+  background : url(./images/Group.png) no-repeat 4px !important;
+}
+
+.searchItem {
+  background : url(./images/GenericSearch16.png) no-repeat 4px !important;
+}
+
+.dijitDisabled .folderItem, .folderItem.paneDisabled {
+  background : url(./images/Folder16Disabled.png) no-repeat 4px !important;
+}
+
+.dijitDisabled .tagItem, .tagItem.paneDisabled {
+  background : url(./images/GenericTag16Disabled.png) no-repeat 4px !important;
+}
+
+.dijitDisabled .groupItem, .groupItem.paneDisabled {
+  background : url(./images/GroupDisabled.png) no-repeat 4px !important;
+}
+
+.dijitDisabled .searchItem {
+  background : url(./images/GenericSearch16Disabled.png) no-repeat 4px !important;
+}
+
+.tagEditorIcon {
+  background : url(./images/EditTag16.png) no-repeat 4px !important;
+}
+
+.exportIcon {
+  background : url(./images/export.png) no-repeat center !important;
+}
+
+.detailsIcon {
+  background : url(./images/ViewDetails16.png) no-repeat center !important;
+}
+
+.galleryIcon {
+  background : url(./images/ViewGallery16.png) no-repeat center !important;
+}
+
+.removeTagIcon {
+  background : url(./images/DeleteTag16.png) no-repeat 6px !important;
+}
+
+.addNewTagIcon {
+  background : url(./images/AddTag16.png) no-repeat 6px !important;
+}
+
+.replaceTagIcon {
+  background : url(./images/ReplaceTag16.png) no-repeat center !important;
+}
+
+.dijitDisabled .removeTagIcon {
+  background : url(./images/DeleteTag16Disabled.png) no-repeat 6px !important;
+}
+
+.dijitDisabled .addNewTagIcon {
+  background : url(./images/AddTag16Disabled.png) no-repeat 6px !important;
+}
+
+.dijitDisabled .replaceTagIcon {
+  background : url(./images/ReplaceTag16Disabled.png) no-repeat center !important;
+}
+
+.applyParamsIcon {
+  background : url(./images/GenericSearch16.png) no-repeat center !important;
+}
+
+.dijitDisabled .applyParamsIcon {
+  background : url(./images/GenericSearch16Disabled.png) no-repeat center !important;
+}
+
+.clearParamsIcon {
+  background : url(./images/GenericSearchClear16.png) no-repeat center !important;
+}
+
+.countsIcon {
+  background : url(./images/Numberes16.png) no-repeat center !important;
+}
+
+.getCountsIcon {
+  background : url(./images/GetNumberes16.png) no-repeat center !important;
+}
+
+.syncCountsIcon {
+  background : url(./images/SyncNumberes16.png) no-repeat center !important;
+}
+
+.advancedIcon {
+  background : url(./images/Advanced16.png) no-repeat center !important;
+}
+
+.lessThanOne {
+  color : red;
+}
+
+.atLeastOne {
+  color : green;
+}
+
+.itemThumbnail {
+  max-height : 40px;
+  border     : solid 1px silver;
+}
+
+.iconItem {
+  padding-left : 24px !important;
+}
+
+.iconWebMap, .iconCityEngineWebScene {
+  background : url(./images/WebMap.png) no-repeat 4px;
+}
+
+.iconExplorerMap, .iconOperationView, .iconMapPackage, .iconMapDocument {
+  background : url(./images/MapPackage.png) no-repeat 4px;
+}
+
+.iconMapService, .iconFeatureService, .iconGlobeService, .iconImageService, .iconKML, .iconWMS {
+  background : url(./images/MapService.png) no-repeat 4px;
+}
+
+.iconGeoprocessingService, .iconNetworkAnalysisService, .iconGeometryService, .iconGeocodingService {
+  background : url(./images/GeoprocessingService.png) no-repeat 4px;
+}
+
+.iconLayer, .iconLayerPackage {
+  background : url(./images/LayerPackage.png) no-repeat 4px;
+}
+
+.iconCodeSample, .iconOperationsDashboardAddIn, .iconExplorerAddIn, .iconCodeAttachment, .iconDesktopApplicationTemplate {
+  background : url(./images/CodeSample.png) no-repeat 4px;
+}
+
+.iconServiceDefinition, .iconCSV, .iconShapefile {
+  background : url(./images/ServiceDefinition.png) no-repeat 4px;
+}
+
+.iconApplication, .iconWebMappingApplication, .iconMobileApplication {
+  background : url(./images/WebMappingApplication.png) no-repeat 4px;
+}
+
+.iconSymbolSet, .iconColorSet, .iconFeatureCollectionTemplate, .iconFeaturedItems {
+  background : url(./images/ItemInformation16.png) no-repeat 4px;
+}
+
 .dgrid {
-  width  : 100% !important;
-  height : 100% !important;
-  /*padding : 0 !important;
-  margin  : 0 auto 0 auto !important;*/
-  border : none !important;
+  width   : 100% !important;
+  height  : 100% !important;
+  margin  : 0 !important;
+  padding : 0 !important;
+  border  : none !important;
 }
 
 #listContainer .dgrid-header, #listContainer .dgrid-header-scroll {
-  /*min-height    : 2.0em !important;*/
   border-bottom : solid 1px silver;
+}
+
+.paneDisabled {
+  color  : gray !important;
+  cursor : default !important;
 }
 
 .dgrid-header, .dgrid-header:hover, .dgrid-header-scroll, .dgrid-cell[role="columnheader"]:hover {
@@ -192,8 +560,7 @@ html, body, #mainContainer {
 
 .dgrid-row {
   cursor        : pointer;
-  line-height   : 1em;
-  padding       : 0.75em 0 0.75em 26px;
+  padding       : 5px 0 5px 0;
   border-bottom : solid 1px silver;
 }
 
@@ -201,59 +568,28 @@ html, body, #mainContainer {
   background : #ddd !important;
 }
 
-.descNode {
-  max-height : 3em;
-  overflow   : auto !important;
+.dgrid-selector {
+  width : 26px;
 }
 
 .dgrid-cell {
-  height         : 2em;
+  height         : 1em;
   border         : none !important;
   vertical-align : middle;
 }
 
 .dgrid-cell[role="columnheader"] {
-  padding-left : 10px;
-  border-right : solid 1px silver !important;
+  padding-left     : 10px;
+  border-right     : solid 1px silver !important;
+  background-color : ghostwhite;
 }
 
-.field-thumbnailUrl {
-  width      : 150px;
-  text-align : center;
+#tagListPane .removeNode {
+  background-position : 300px;
 }
 
-.groupItem {
-  background : url(./images/Group.png) no-repeat 4px !important;
-}
-
-.rootFolder {
-  font-style : italic !important;
-}
-
-.dijitIcon {
-  width  : 22px;
-  height : 22px;
-}
-
-.folderItem {
-  background : url(./images/Folder16.png) no-repeat 4px !important;
-}
-
-.tagItem {
-  background : url(./images/GenericTag16.png) no-repeat 4px !important;
-}
-
-.detailsIcon {
-  background : url(./images/ViewDetails16.png) no-repeat 8px !important;
-}
-
-.galleryIcon {
-  background : url(./images/ViewGallery16.png) no-repeat 6px !important;
-}
-
-.itemThumbnail {
-  max-height : 40px;
-  border     : solid 1px silver;
+#tagListPane .removeNode .dgrid-selected {
+  background-position : right;
 }
 
 .dgrid-selected {
@@ -265,55 +601,16 @@ html, body, #mainContainer {
   background-image : url(./images/FolderOpenState16.png) !important;
 }
 
-.iconItem {
-  padding-left : 24px !important;
-}
-
-.iconWebMap {
-  background : url(./images/WebMap.png) no-repeat 4px;
-}
-
-.iconExplorerMap, .iconOperationView, .iconMapPackage {
-  background : url(./images/MapPackage.png) no-repeat 4px;
-}
-
-.iconMapService, .iconFeatureService, .iconImageService, .iconKML, .iconWMS {
-  background : url(./images/MapService.png) no-repeat 4px;
-}
-
-.iconGeoprocessingService, .iconNetworkAnalysisService {
-  background : url(./images/GeoprocessingService.png) no-repeat 4px;
-}
-
-.iconLayerPackage {
-  background : url(./images/LayerPackage.png) no-repeat 4px;
-}
-
-.iconCodeSample, .iconOperationsDashboardAddIn, .iconExplorerAddIn, .iconCodeAttachment, .iconDesktopApplicationTemplate {
-  background : url(./images/CodeSample.png) no-repeat 4px;
-}
-
-.iconServiceDefinition, .iconCSV, .iconShapefile {
-  background : url(./images/ServiceDefinition.png) no-repeat 4px;
-}
-
-.iconWebMappingApplication {
-  background : url(./images/WebMappingApplication.png) no-repeat 4px;
-}
-
-#sourceListController .dijitButtonContents {
-  font-weight : bolder;
-}
-
 .esriSignInDialog {
-  border        : solid 1px #555 !important;
+  border        : solid 1px silver !important;
   border-radius : 6px;
-  color         : #eee !important;
 }
 
 .esriSignInDialog .dijitDialogTitleBar {
+  padding       : 5px !important;
   border        : none !important;
-  background    : #444 none !important;
+  background    : #555 none !important;
+  box-shadow    : inset 0 0 5px silver;
   border        : none !important;
   border-radius : 4px 4px 0 0;
 }
@@ -325,22 +622,24 @@ html, body, #mainContainer {
 
 .esriSignInDialog .dijitDialogPaneContent {
   border           : none !important;
-  background-color : #444 !important;
+  background-color : silver !important;
   border-radius    : 0 0 4px 4px;
 }
 
 .esriSignInDialog .dijitDialogPaneContentArea {
-  background-color : #333 !important;
+  background-color : silver !important;
   border           : none !important;
 }
 
 .esriSignInDialog .dijitDialogPaneActionBar {
-  background-color : #666 !important;
+  background-color : #555 !important;
+  box-shadow       : inset 0 0 5px silver;
   border           : none !important;
   border-radius    : 0 0 4px 4px;
 }
 
 .esriSignInDialog .dijitButtonNode {
+  color        : #eee !important;
   background   : #333 !important;
   border-color : #444 !important;
 }
