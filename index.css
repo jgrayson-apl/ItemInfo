@@ -73,11 +73,11 @@ html, body, #mainContainer {
 
 #typeContainer {
   width  : 450px;
-  margin : 10px 4px 10px 10px;
+  margin : 6px 3px 6px 6px;
 }
 
 #listContainer {
-  margin : 10px 10px 10px 4px;
+  margin : 6px 6px 6px 3px;
 }
 
 #typeContainer, #listContainer {
@@ -192,6 +192,11 @@ html, body, #mainContainer {
 
 #searchPane {
   background-color : white;
+}
+
+#searchParametersPane {
+  height           : 25%;
+  background-color : #fff;
 }
 
 #searchQueryString {
@@ -598,12 +603,22 @@ html, body, #mainContainer {
   padding-left : 24px !important;
 }
 
+
+
+.iconFileGeodatabase {
+  background : url(./images/Geodatabase16.png) no-repeat 4px;
+}
+
 .iconWebMap, .iconCityEngineWebScene {
   background : url(./images/WebMap.png) no-repeat 4px;
 }
 
 .iconExplorerMap, .iconOperationView, .iconMapPackage, .iconMapDocument {
   background : url(./images/MapPackage.png) no-repeat 4px;
+}
+
+.iconWebScene, .iconProMap {
+  background : url(./images/AddGreen16.png) no-repeat 4px;
 }
 
 .iconMapService, .iconFeatureService, .iconGlobeService, .iconImageService, .iconKML, .iconWMS {
@@ -630,7 +645,7 @@ html, body, #mainContainer {
   background : url(./images/WebMappingApplication.png) no-repeat 4px;
 }
 
-.iconSymbolSet, .iconColorSet, .iconFeatureCollectionTemplate, .iconFeaturedItems {
+.iconSymbolSet, .iconColorSet, .iconFeatureCollection, .iconFeatureCollectionTemplate, .iconFeaturedItems {
   background : url(./images/ItemInformation16.png) no-repeat 4px;
 }
 

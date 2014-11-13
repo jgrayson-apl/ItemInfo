@@ -54,7 +54,7 @@ require([
   "apl/ArcGISServerUtils",
   "apl/ArcGISOnlineUtils",
   "esri/IdentityManager"
-], function (ready, declare, lang, connect, array, aspect, query, json, on, mouse, cookie, dom, domConstruct, domClass, domStyle, number, string, Deferred, all, ObjectStore, Memory, Observable, List, Grid, OnDemandList, OnDemandGrid, ColumnHider, Selection, selector, DijitRegistry, put, locale, TitlePane, Dialog, popup, TooltipDialog, Menu, MenuItem, Button, TextBox, NumberTextBox, DateTextBox, Select, registry, esriRequest, esriKernel, esriConfig, urlUtils, domUtils, arcgisUtils, esriPortal, ArcGISSearchUtils, ArcGISServerUtils, ArcGISOnlineUtils, IdentityManager) {
+], function (ready, declare, lang, connect, array, aspect, query, json, on, mouse, cookie, dom, domConstruct, domClass, domStyle, number, string, Deferred, all, ObjectStore, MemoryStore, Observable, List, Grid, OnDemandList, OnDemandGrid, ColumnHider, Selection, selector, DijitRegistry, put, locale, TitlePane, Dialog, popup, TooltipDialog, Menu, MenuItem, Button, TextBox, NumberTextBox, DateTextBox, Select, registry, esriRequest, esriKernel, esriConfig, urlUtils, domUtils, arcgisUtils, esriPortal, ArcGISSearchUtils, ArcGISServerUtils, ArcGISOnlineUtils, IdentityManager) {
 
   var portalUser = null;
   var sourceFoldersList = null;
@@ -80,6 +80,32 @@ require([
   var portalUrlList = [
     document.location.protocol + "//www.arcgis.com"
   ];
+
+  //
+  // WE NEED CASE INSENSITIVE SORTS...
+  //
+  // http://stackoverflow.com/questions/26783489/non-case-sensitive-sorting-in-dojo-dgrid
+  //
+  var Memory = declare(MemoryStore, {
+    query: function (query, queryOptions) {
+      var sort = queryOptions && queryOptions.sort;
+      if(sort) {
+        // Replace sort array with a function equivalent that performs case-insensitive sorting
+        queryOptions.sort = function (a, b) {
+          for (var i = 0; i < sort.length; i++) {
+            var aValue = a[sort[i].attribute].toLowerCase();
+            var bValue = b[sort[i].attribute].toLowerCase();
+            if(aValue !== bValue) {
+              var result = aValue > bValue ? 1 : -1;
+              return result * (sort[i].descending ? -1 : 1);
+            }
+          }
+          return 0;
+        }
+      }
+      return this.inherited(arguments);
+    }
+  });
 
   ready(function () {
 
@@ -1550,6 +1576,10 @@ require([
 
     }
 
+    /**
+     *
+     * @param row
+     */
     function displayItemDetails(row) {
 
       var itemDetailsNode = put('div');
@@ -1563,19 +1593,15 @@ require([
           popup.close(myTooltipDialog);
         }
       });
-
       popup.open({
         popup: myTooltipDialog,
         around: row.element//,
         //orient: {'BR':'TR', 'BL':'TL', 'TR':'BR', 'TL':'BL'}
       });
-
     }
-
 
     // SOURCE FOLDER ITEM SELECTED //
     function sourceFolderSelected(evt) {
-      /*if(!domClass.contains(evt.rows[0].element, 'paneDisabled')) {*/
       sourceGroupsList.clearSelection();
       sourceTagsList.clearSelection();
       domClass.add('sourceItemsCount', 'searching');
@@ -1584,17 +1610,14 @@ require([
       var portalFolder = evt.rows[0].data;
       if(portalFolder) {
         getFolderItemStore(portalFolder).then(updateSourceItemList);
-        //displayItemDetails(evt.rows[0]);
         updateRegisterServicesOption(false);
       } else {
         updateRegisterServicesOption(true);
       }
-      /*}*/
     }
 
     // SOURCE GROUP ITEM SELECTED //
     function sourceGroupSelected(evt) {
-      /*if(!domClass.contains(evt.rows[0].element, 'paneDisabled')) {*/
       sourceFoldersList.clearSelection();
       sourceTagsList.clearSelection();
       domClass.add('sourceItemsCount', 'searching');
@@ -1604,12 +1627,10 @@ require([
       if(portalGroup) {
         getGroupItemStore(portalGroup).then(updateSourceItemList);
       }
-      /*}*/
     }
 
     // SOURCE TAG ITEM SELECTED //
     function sourceTagSelected(evt) {
-      /*if(!domClass.contains(evt.rows[0].element, 'paneDisabled')) {*/
       sourceFoldersList.clearSelection();
       sourceGroupsList.clearSelection();
       domClass.add('sourceItemsCount', 'searching');
@@ -1619,7 +1640,6 @@ require([
       if(userTag) {
         getTagsItemStore(userTag).then(updateSourceItemList);
       }
-      /*}*/
     }
 
     // SEARCH FOR ITEMS BY QUERY //
