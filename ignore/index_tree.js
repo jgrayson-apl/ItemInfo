@@ -9,7 +9,6 @@ require([
   "dojo/json",
   "dojo/on",
   "dojo/mouse",
-  "dojo/cookie",
   "dojo/dom",
   "dojo/dom-construct",
   "dojo/dom-class",
@@ -30,6 +29,8 @@ require([
   "dgrid/selector",
   "dgrid/extensions/DijitRegistry",
   "put-selector/put",
+  "dijit/tree/ObjectStoreModel",
+  "dijit/Tree",
   "dojo/date/locale",
   "dijit/TitlePane",
   "dijit/Dialog",
@@ -50,11 +51,8 @@ require([
   "esri/domUtils",
   "esri/arcgis/utils",
   "esri/arcgis/Portal",
-  "apl/ArcGISSearchUtils",
-  "apl/ArcGISServerUtils",
-  "apl/ArcGISOnlineUtils",
   "esri/IdentityManager"
-], function (ready, declare, lang, connect, array, aspect, query, json, on, mouse, cookie, dom, domConstruct, domClass, domStyle, number, string, Deferred, all, ObjectStore, Memory, Observable, List, Grid, OnDemandList, OnDemandGrid, ColumnHider, Selection, selector, DijitRegistry, put, locale, TitlePane, Dialog, popup, TooltipDialog, Menu, MenuItem, Button, TextBox, NumberTextBox, DateTextBox, Select, registry, esriRequest, esriKernel, esriConfig, urlUtils, domUtils, arcgisUtils, esriPortal, ArcGISSearchUtils, ArcGISServerUtils, ArcGISOnlineUtils, IdentityManager) {
+], function (ready, declare, lang, connect, array, aspect, query, json, on, mouse, dom, domConstruct, domClass, domStyle, number, string, Deferred, all, ObjectStore, Memory, Observable, List, Grid, OnDemandList, OnDemandGrid, ColumnHider, Selection, selector, DijitRegistry, put, ObjectStoreModel, Tree, locale, TitlePane, Dialog, popup, TooltipDialog, Menu, MenuItem, Button, TextBox, NumberTextBox, DateTextBox, Select, registry, esriRequest, esriKernel, esriConfig, urlUtils, domUtils, arcgisUtils, esriPortal, IdentityManager) {
 
   var portalUser = null;
   var sourceFoldersList = null;
@@ -70,928 +68,600 @@ require([
   var queryCountDeferred = null;
   var getSearchItemsDeferred = null;
 
-  var agsServerUtils = null;
-  var serverFoldersList = null;
-  var serverServicesList = null;
-
-  var arcGISSearchUtils = null;
-  var arcGISOnlineUtils = null;
-
-  var portalUrlList = [
-    document.location.protocol + "//www.arcgis.com"/*,
-     document.location.protocol + "//portalhost.esri.com/gis",
-     document.location.protocol + "//portalhostqa.esri.com/gis",
-     document.location.protocol + "//portalhostds.esri.com/gis"*/
-  ];
-
   ready(function () {
 
     // PROXY URL //
     esriConfig.defaults.io.proxyUrl = "./resources/proxy.ashx";
 
-    // SEARCH UTILS //
-    arcGISSearchUtils = new ArcGISSearchUtils();
+    // PORTAL //
+    var portalUrl = document.location.protocol + '//www.arcgis.com';
+    var portal = new esriPortal.Portal(portalUrl);
+    // PORTAL LOADED //
+    portal.on('load', lang.hitch(this, function () {
 
-    // SERVER UTILS //
-    agsServerUtils = new ArcGISServerUtils();
+      /*
+       // FOLDERS LIST //
+       sourceFoldersList = declare([OnDemandList, Selection, DijitRegistry])({
+       store: new Observable(new Memory({
+       data: []
+       })),
+       loadingMessage: "Loading folders...",
+       noDataMessage: "User Folders",
+       selectionMode: "single",
+       allowTextSelection: true,
+       renderRow: renderFolderRow
+       }, "sourceFoldersList");
+       sourceFoldersList.startup();
+       sourceFoldersList.on("dgrid-select", sourceFolderSelected);
 
-    // PICK PORTAL //
-    pickPortal().then(lang.hitch(this, function (portalUrl) {
+       // GROUPS LIST //
+       sourceGroupsList = declare([OnDemandList, Selection, DijitRegistry])({
+       store: new Observable(new Memory({
+       data: []
+       })),
+       loadingMessage: "Loading groups...",
+       noDataMessage: "User Groups",
+       selectionMode: "single",
+       allowTextSelection: true,
+       renderRow: renderGroupRow
+       }, "sourceGroupList");
+       sourceGroupsList.startup();
+       sourceGroupsList.on("dgrid-select", sourceGroupSelected);
 
-      // PORTAL //
-      var portal = new esriPortal.Portal(portalUrl);
-      // PORTAL LOADED //
-      portal.on('load', lang.hitch(this, function () {
-
-        serverFoldersList = declare([OnDemandList, Selection, DijitRegistry])({
-          store: new Observable(new Memory({
-            data: []
-          })),
-          loadingMessage: "Loading folders...",
-          noDataMessage: "Server Folders",
-          selectionMode: "single",
-          allowTextSelection: true,
-          renderRow: renderServerFolderRow
-        }, "rs_serverFoldersPane");
-        serverFoldersList.startup();
-        serverFoldersList.on("dgrid-select", getServerServicesInfo);
-
-        serverServicesList = declare([OnDemandGrid, Selection, DijitRegistry])({
-          store: new Observable(new Memory({
-            data: []
-          })),
-          columns: getServicesColumns(),
-          selectionMode: "extended",
-          loadingMessage: "Loading services...",
-          noDataMessage: "No services found"
-        }, "rs_serverServicesPane");
-        serverServicesList.startup();
-        serverServicesList.on("dgrid-select", updateRegisterServicesBtn);
-        serverServicesList.on("dgrid-deselect", updateRegisterServicesBtn);
-
-        registry.byId('getServerFolders').on('click', lang.hitch(this, getServerFolders));
-        registry.byId('agsServer').on('change', lang.hitch(this, updateServerUrl));
-        registry.byId('agsInstance').on('change', lang.hitch(this, updateServerUrl));
-        registry.byId('rs_selectAllBtn').on('click', lang.hitch(this, updateServiceItemSelection, true));
-        registry.byId('rs_selectNoneBtn').on('click', lang.hitch(this, updateServiceItemSelection, false));
-        registry.byId('applyCommonPropertiesBtn').on('click', lang.hitch(this, applyCommonProperties));
-        registry.byId('registerServicesBtn').on('click', lang.hitch(this, registerSelectedServiceItems));
-
-
-        initServerActions();
-        updateServerUrl();
-        updateRegisterServicesOption(true);
+       // TAGS LIST //
+       sourceTagsList = declare([OnDemandList, Selection, DijitRegistry])({
+       store: new Observable(new Memory({
+       data: []
+       })),
+       loadingMessage: "Loading tags...",
+       noDataMessage: "User Tags",
+       selectionMode: "single",
+       allowTextSelection: true,
+       renderRow: renderTagRow
+       }, "sourceTagList");
+       sourceTagsList.startup();
+       sourceTagsList.on("dgrid-select", sourceTagSelected);
+       */
 
 
-        /**
-         *
-         *
-         *
-         *
+      // ITEM LIST //
+      sourceItemList = declare([OnDemandGrid, ColumnHider, DijitRegistry])({
+        store: new Observable(new Memory({
+          data: []
+        })),
+        columns: getColumns(),
+        loadingMessage: "Loading items...",
+        noDataMessage: "No items found"
+      }, "sourceItemList");
+      sourceItemList.startup();
+      aspect.after(sourceItemList, 'renderArray', sourceListUpdated, true);
+      sourceItemList.on("dgrid-columnstatechange", lang.hitch(this, filterSourceItems));
+      sourceItemList.on(".dgrid-row:click", lang.partial(displayItemInAGOL, sourceItemList));
+      sourceItemList.on('.dgrid-cell:contextmenu', function (evt) {
+        evt.preventDefault();
+      });
+
+      /*
+       // FIND SIMILAR MENU //
+       var findSimilarMenu = new Menu({
+       targetNodeIds: [sourceItemList.domNode],
+       selector: "td.dgrid-cell.field-tags"
+       });
+       findSimilarMenu.addChild(new MenuItem({
+       label: "Find items with SIMILAR tags",
+       onClick: lang.partial(findSimilarTags, false)
+       }));
+
+
+       // FILTER TITLE KEY UP //
+       on(registry.byId('sourceItemsFilterInput'), 'keyup', filterSourceItems);
+
+       // FILTER TYPE CHANGE //
+       on(registry.byId('itemTypeSelect'), 'change', filterSourceItems);
+
+       // SOURCE LIST CHANGE //
+       connect.connect(registry.byId('sourceListsContainer'), 'selectChild', sourceListChange);
+
+       // USER OWNED CHANGED //
+       on(registry.byId('userOwnedChk'), 'change', filterSourceItems);
+
+       // APPLY SEARCH QUERY //
+       on(registry.byId('applySearchBtn'), 'click', lang.hitch(this, applySearchQuery));
+
+       // CLEAR SARCH PARAMETERS //
+       on(registry.byId('clearSearchBtn'), 'click', lang.hitch(this, clearSearchQuery));
+
+       // USE FIELD NAMES IN CSV OUTPUT //
+       on(registry.byId('useFieldNamesChk'), 'change', lang.hitch(this, exportItemList, null));
+
+       // GET ITEM COUNTS //
+       //on(registry.byId('getCountsBtn'), 'click', lang.hitch(this, getItemCounts));
+
+       // SYNC ITEM AND SEARCH COUNTS //
+       //on(registry.byId('applySyncCountsBtn'), 'click', lang.hitch(this, syncItemCounts));
+
+       */
+
+      // OPTIONS STACK CONTAINER CHILD SELECTED //
+      /*connect.connect(registry.byId('optionsContainer'), 'selectChild', lang.hitch(this, function (selectedChild) {
+
+       var checked = ((selectedChild.title === "Tag Editor") || (selectedChild.title === "Counts"));
+       registry.byId('userOwnedChk').set('checked', checked);
+       registry.byId('userOwnedChk').set('disabled', checked);
+
+       sourceItemList.refresh();
+       if(tagItemList) {
+       tagItemList.clearSelection();
+       }
+       if(tagsList) {
+       tagsList.clearSelection();
+       }
+
+
+       sourceFoldersList.set('selectionMode', checked ? "none" : "single");
+       sourceGroupsList.set('selectionMode', checked ? "none" : "single");
+       sourceTagsList.set('selectionMode', checked ? "none" : "single");
+
+       query("#sourceListController .dijitToggleButton").forEach(lang.hitch(this, function (node) {
+       var toggleButton = registry.byNode(node);
+       if(toggleButton) {
+       toggleButton.set('disabled', checked);
+       }
+       }));
+
+       query("#sourceListsContainer .dgrid-row").forEach(lang.hitch(this, function (node) {
+       if(checked) {
+       domClass.add(node, 'paneDisabled');
+       } else {
+       domClass.remove(node, 'paneDisabled');
+       }
+       }));
+
+
+       }));*/
+
+      // EXPAND/COLLAPSE LEFT PANE //
+      /*on(dom.byId('expandoImage'), 'click', lang.hitch(this, function () {
+       var expandoImage = dom.byId('expandoImage');
+       domClass.toggle(dom.byId('expandoImage'), "expand");
+       var newSize = (domClass.contains(expandoImage, "expand")) ? {w: 70} : {w: 500};
+       registry.byId('typeContainer').resize(newSize);
+       registry.byId('mainContainer').layout();
+       }));
+
+       // SHOW/HIDE LEFT PANE CONTENT WHEN RE-SIZED //
+       aspect.after(registry.byId('typeContainer'), 'resize', lang.hitch(this, function (newSize) {
+       var sourceListController = registry.byId('sourceListController');
+       var sourceListsContainer = registry.byId('sourceListsContainer');
+       var sourcePanelInfo = registry.byId('sourcePanelInfo');
+       if(newSize.w) {
+       if(newSize.w < 100) {
+       domClass.add(dom.byId('expandoImage'), "expand");
+       domUtils.hide(sourceListController.domNode);
+       domUtils.hide(sourceListsContainer.domNode);
+       domUtils.hide(sourcePanelInfo.domNode);
+       } else {
+       domClass.remove(dom.byId('expandoImage'), "expand");
+       domUtils.show(sourceListController.domNode);
+       domUtils.show(sourceListsContainer.domNode);
+       domUtils.show(sourcePanelInfo.domNode);
+       }
+       }
+       }), true);*/
+
+
+      // SIGN IN //
+      portal.signIn().then(lang.hitch(this, function (user) {
+        portalUser = user;
+
+        initSourcesTree();
+
+        dom.byId('loggedInUser').innerHTML = portalUser.fullName;
+
+        /* // GET USER FOLDERS //
+         portalUser.getFolders().then(function (folders) {
+         // ROOT FOLDER //
+         var rootFolder = {
+         id: '',
+         title: portalUser.username,
+         isRoot: true
+         };
+         // FOLDER STORE //
+         var folderStore = new Observable(new Memory({
+         data: [rootFolder].concat(folders)
+         }));
+         // SET LISTS STORE //
+         sourceFoldersList.set('store', folderStore);
+         });
+
+         // GET USER GROUPS //
+         portalUser.getGroups().then(function (groups) {
+
          */
+        /*var favoritesGroup = {
+         id: portalUser.favGroupId,
+         title: "Favorites"
+         };*/
+        /*
 
-          // FOLDERS LIST //
-        sourceFoldersList = declare([OnDemandList, Selection, DijitRegistry])({
-          store: new Observable(new Memory({
-            data: []
-          })),
-          loadingMessage: "Loading folders...",
-          noDataMessage: "User Folders",
-          selectionMode: "single",
-          allowTextSelection: true,
-          renderRow: renderFolderRow
-        }, "sourceFoldersList");
-        sourceFoldersList.startup();
-        sourceFoldersList.on("dgrid-select", sourceFolderSelected);
+         // GROUPS STORE //
+         var groupStore = new Observable(new Memory({
+         data: groups
+         }));
+         // SET LISTS STORE //
+         sourceGroupsList.set('store', groupStore);
+         });
 
-        // GROUPS LIST //
-        sourceGroupsList = declare([OnDemandList, Selection, DijitRegistry])({
-          store: new Observable(new Memory({
-            data: []
-          })),
-          loadingMessage: "Loading groups...",
-          noDataMessage: "User Groups",
-          selectionMode: "single",
-          allowTextSelection: true,
-          renderRow: renderGroupRow
-        }, "sourceGroupList");
-        sourceGroupsList.startup();
-        sourceGroupsList.on("dgrid-select", sourceGroupSelected);
+         // GET USER TAGS //
+         portalUser.getTags().then(function (tagItems) {
+         var tagStore = new Observable(new Memory({
+         data: array.map(tagItems, function (tagItem) {
+         return {id: tagItem.tag, tag: tagItem.tag};
+         })
+         }));
+         // SET LISTS STORE //
+         sourceTagsList.set('store', tagStore);
+         });
 
-        // TAGS LIST //
-        sourceTagsList = declare([OnDemandList, Selection, DijitRegistry])({
-          store: new Observable(new Memory({
-            data: []
-          })),
-          loadingMessage: "Loading tags...",
-          noDataMessage: "User Tags",
-          selectionMode: "single",
-          allowTextSelection: true,
-          renderRow: renderTagRow
-        }, "sourceTagList");
-        sourceTagsList.startup();
-        sourceTagsList.on("dgrid-select", sourceTagSelected);
-
-        // ITEM LIST //
-        sourceItemList = declare([OnDemandGrid, ColumnHider, DijitRegistry])({
-          store: new Observable(new Memory({
-            data: []
-          })),
-          columns: getColumns(),
-          loadingMessage: "Loading items...",
-          noDataMessage: "No items found"
-        }, "sourceItemList");
-        sourceItemList.startup();
-        aspect.after(sourceItemList, 'renderArray', sourceListUpdated, true);
-        sourceItemList.on("dgrid-columnstatechange", lang.hitch(this, filterSourceItems));
-        sourceItemList.on(".dgrid-row:click", lang.partial(displayItemInAGOL, sourceItemList));
-        sourceItemList.on('.dgrid-cell:contextmenu', function (evt) {
-          evt.preventDefault();
-        });
-
-        // FIND SIMILAR MENU //
-        var findSimilarMenu = new Menu({
-          targetNodeIds: [sourceItemList.domNode],
-          selector: "td.dgrid-cell.field-tags"
-        });
-        findSimilarMenu.addChild(new MenuItem({
-          label: "Find items with SIMILAR tags",
-          onClick: lang.partial(findSimilarTags, false)
-        }));
-
-        // FILTER TITLE KEY UP //
-        on(registry.byId('sourceItemsFilterInput'), 'keyup', filterSourceItems);
-
-        // FILTER TYPE CHANGE //
-        on(registry.byId('itemTypeSelect'), 'change', filterSourceItems);
-
-        // USER OWNED CHANGED //
-        on(registry.byId('userOwnedChk'), 'change', filterSourceItems);
-
-        // APPLY SEARCH QUERY //
-        on(registry.byId('applySearchBtn'), 'click', lang.hitch(this, applySearchQuery));
-
-        // CLEAR SARCH PARAMETERS //
-        on(registry.byId('clearSearchBtn'), 'click', lang.hitch(this, clearSearchQuery));
-
-        // USE FIELD NAMES IN CSV OUTPUT //
-        on(registry.byId('useFieldNamesChk'), 'change', lang.hitch(this, exportItemList, null));
-
-        // GET ITEM COUNTS //
-        //on(registry.byId('getCountsBtn'), 'click', lang.hitch(this, getItemCounts));
-
-        // SYNC ITEM AND SEARCH COUNTS //
-        //on(registry.byId('applySyncCountsBtn'), 'click', lang.hitch(this, syncItemCounts));
-
-        // SOURCE LIST CHANGE //
-        connect.connect(registry.byId('sourceListsContainer'), 'selectChild', sourceListChange);
-
-        // OPTIONS STACK CONTAINER CHILD SELECTED //
-        connect.connect(registry.byId('optionsContainer'), 'selectChild', lang.hitch(this, function (selectedChild) {
-
-          var itemsSource = registry.byId('sourceListsContainer').selectedChildWidget;
-          var checked = ((selectedChild.title === "Tag Editor") && ((itemsSource.title === "Groups") || (itemsSource.title === "Search")));
-          registry.byId('userOwnedChk').set('checked', checked && (portalUser.role !== "org_admin"));
-          registry.byId('userOwnedChk').set('disabled', checked && (portalUser.role !== "org_admin"));
-
-          sourceItemList.refresh();
-          if(tagItemList) {
-            tagItemList.clearSelection();
-          }
-          if(tagsList) {
-            tagsList.clearSelection();
-          }
-
-          var disableSourceSelection = false;
-
-          switch (selectedChild.title) {
-            case "Details":
-              break;
-            case "Gallery":
-              break;
-            case "CSV":
-              break;
-            case "Tag Editor":
-              disableSourceSelection = true;
-              break;
-            case "Register Services":
-              disableSourceSelection = true;
-              break;
-          }
-
-          //sourceFoldersList.set('selectionMode', disableSourceSelection ? "none" : "single");
-          //sourceGroupsList.set('selectionMode', disableSourceSelection ? "none" : "single");
-          //sourceTagsList.set('selectionMode', disableSourceSelection ? "none" : "single");
-
-          query("#sourceListController .dijitToggleButton").forEach(lang.hitch(this, function (node) {
-            var toggleButton = registry.byNode(node);
-            if(toggleButton) {
-              toggleButton.set('disabled', disableSourceSelection);
-            }
-          }));
-
-          query("#sourceListsContainer .dgrid-row").forEach(lang.hitch(this, function (node) {
-            if(disableSourceSelection) {
-              domClass.add(node, 'paneDisabled');
-            } else {
-              domClass.remove(node, 'paneDisabled');
-            }
-          }));
-
-        }));
-
-        // EXPAND/COLLAPSE LEFT PANE //
-        on(dom.byId('expandoImage'), 'click', lang.hitch(this, function () {
-          var expandoImage = dom.byId('expandoImage');
-          domClass.toggle(dom.byId('expandoImage'), "expand");
-          var newSize = (domClass.contains(expandoImage, "expand")) ? {w: 70} : {w: 450};
-          registry.byId('typeContainer').resize(newSize);
-          registry.byId('mainContainer').layout();
-        }));
-
-        // SHOW/HIDE LEFT PANE CONTENT WHEN RE-SIZED //
-        aspect.after(registry.byId('typeContainer'), 'resize', lang.hitch(this, function (newSize) {
-          var sourceListController = registry.byId('sourceListController');
-          var sourceListsContainer = registry.byId('sourceListsContainer');
-          var sourcePanelInfo = registry.byId('sourcePanelInfo');
-          if(newSize.w) {
-            if(newSize.w < 100) {
-              domClass.add(dom.byId('expandoImage'), "expand");
-              domUtils.hide(sourceListController.domNode);
-              domUtils.hide(sourceListsContainer.domNode);
-              domUtils.hide(sourcePanelInfo.domNode);
-            } else {
-              domClass.remove(dom.byId('expandoImage'), "expand");
-              domUtils.show(sourceListController.domNode);
-              domUtils.show(sourceListsContainer.domNode);
-              domUtils.show(sourcePanelInfo.domNode);
-            }
-          }
-        }), true);
-
-
-        // SIGN IN //
-        portal.signIn().then(lang.hitch(this, function (loggedInUser) {
-
-          portalUser = loggedInUser;
-          arcGISOnlineUtils = new ArcGISOnlineUtils({portalUser: portalUser});
-
-          dom.byId('loggedInUser').innerHTML = portalUser.fullName;
-
-          // GET USER FOLDERS //
-          portalUser.getFolders().then(function (folders) {
-            // ROOT FOLDER //
-            var rootFolder = {
-              id: '',
-              title: portalUser.username,
-              isRoot: true
-            };
-            // FOLDER STORE //
-            var folderStore = new Observable(new Memory({
-              data: [rootFolder].concat(folders)
-            }));
-            // SET LISTS STORE //
-            sourceFoldersList.set('store', folderStore);
-          });
-
-          // GET USER GROUPS //
-          portalUser.getGroups().then(function (groups) {
-            /*var favoritesGroup = {
-             id: portalUser.favGroupId,
-             title: "Favorites"
-             };*/
-
-            // GROUPS STORE //
-            var groupStore = new Observable(new Memory({
-              data: groups
-            }));
-            // SET LISTS STORE //
-            sourceGroupsList.set('store', groupStore);
-          });
-
-          // GET USER TAGS //
-          portalUser.getTags().then(function (tagItems) {
-            var tagStore = new Observable(new Memory({
-              data: array.map(tagItems, function (tagItem) {
-                return {id: tagItem.tag, tag: tagItem.tag};
-              })
-            }));
-            // SET LISTS STORE //
-            sourceTagsList.set('store', tagStore);
-          });
-
-
-          buildSearchParameterUI();
-
-        }), lang.hitch(this, function (error) {
-          alert("Trouble signing in to this Portal with these credentials...");
-        }));
-
+         buildSearchParameterUI();*/
       }));
     }));
 
-
     /*
      *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
      */
 
+    function initSourcesTree() {
 
-    function pickPortal(dialogMessage) {
-      var deferred = new Deferred();
+      var rootId = portalUser.username;
 
-      var selectedPortalUrl = portalUrlList[0];
-
-      if(portalUrlList.length === 1) {
-        deferred.resolve(selectedPortalUrl);
-      } else {
-
-        var portalsNode = domConstruct.create('div', {
-          style: 'margin:5px',
-          innerHTML: dialogMessage || "Select Portal:"
-        });
-
-        var portalList = domConstruct.create('div', {
-          className: 'dijitDialogPaneContentArea',
-          style: 'margin:5px;padding:5px;border:solid 1px silver;'
-        }, portalsNode);
-
-        array.forEach(portalUrlList, lang.hitch(this, function (portalUrl) {
-          domConstruct.create('div', {
-            className: 'portalUrlNode',
-            innerHTML: portalUrl,
-            click: lang.hitch(this, function () {
-              selectedPortalUrl = portalUrl;
-              pickPortalDialog.hide();
-            })
-          }, portalList);
-        }));
-
-        var pickPortalDialog = new Dialog({
-          title: document.title,
-          content: portalsNode,
-          onHide: lang.hitch(this, function () {
-            deferred.resolve(selectedPortalUrl);
-          })
-        });
-        pickPortalDialog.show();
-      }
-
-      return deferred.promise;
-    }
-
-
-    /**
-     *
-     */
-    function initServerActions() {
-
-      this.serverList = loadServerList();
-      if(this.serverList) {
-
-        registry.byId('loadServerBtn').on("click", lang.hitch(this, function () {
-
-          var serversDialogContent = put("div");
-          var serverListNode = put(serversDialogContent, "div.dijitDialogPaneContentArea.serverList");
-
-          if(this.serverList.servers.length > 0) {
-            array.forEach(this.serverList.servers, lang.hitch(this, function (serverInfo) {
-              var serverItemNode = put(serverListNode, "div.serverItem", {
-                innerHTML: lang.replace("{agsInstance} @ {agsServer} - <span class='serverUrl'>{url}</span>", serverInfo),
-                onclick: lang.hitch(this, function () {
-                  registry.byId('agsServer').set('value', serverInfo.agsServer);
-                  registry.byId('agsInstance').set('value', serverInfo.agsInstance);
-                  updateServerUrl();
-                  getServerFolders();
-                })
-              });
-              put(serverItemNode, 'div.removeServer', {
-                innerHTML: "X",
-                title: "Remove Server",
-                onclick: lang.hitch(this, function (evt) {
-                  evt.stopPropagation();
-                  array.forEach(this.serverList.servers, lang.hitch(this, function (savedServerInfo, serverIndex) {
-                    if(serverInfo.url === savedServerInfo.url) {
-                      this.serverList.servers.splice(serverIndex, 1);
-                      saveServerList(this.serverList);
-                    }
-                  }));
-                  put(serverItemNode, "!");
-                })
-              });
-            }));
-          } else {
-            put(serverListNode, "div.noServers", "No ArcGIS Servers...");
-          }
-
-          var actionBar = put(serversDialogContent, "div.dijitDialogPaneActionBar");
-
-          var removeAllBtn = new Button({
-            "label": "Remove All Servers",
-            "onClick": lang.hitch(this, function () {
-              if(confirm("Are you sure you want to remove all saved ArcGIS Servers?")) {
-                clearServerList();
-                this.serverList = loadServerList();
-              }
-            })
-          }).placeAt(actionBar);
-          var okBtn = new Button({
-            "label": "Ok",
-            "onClick": lang.hitch(this, function () {
-              serverListDialog.hide();
-            })
-          }).placeAt(actionBar);
-
-
-          var serverListDialog = new Dialog({
-            className: "serverListDialog",
-            title: "Connect To ArcGIS Server",
-            content: serversDialogContent
-          });
-          serverListDialog.startup();
-          serverListDialog.show();
-
-        }));
-
-        registry.byId('saveServerBtn').on("click", lang.hitch(this, function () {
-          var currentServerInfo = agsServerUtils.getServerInfo();
-          if(currentServerInfo) {
-            var inList = array.some(this.serverList.servers, lang.hitch(this, function (serverInfo) {
-              return (serverInfo.url === currentServerInfo.url);
-            }));
-            if(!inList) {
-              this.serverList.servers.push(currentServerInfo);
-              saveServerList(this.serverList);
-              alert("ArcGIS Server connection saved.");
-            }
-          }
-        }));
-
-        /*
-         apl4 @ maps.esri.com - http://maps.esri.com/apl4/rest/services
-         arcgis @ gis.maricopa.gov - http://gis.maricopa.gov/arcgis/rest/services
-         arcgis @ gis.arlingtonva.us - http://gis.arlingtonva.us/arcgis/rest/services
-         arcgis @ gis.ci.waco.tx.us - http://gis.ci.waco.tx.us/arcgis/rest/services
-         arcgis @ www.wijkscan.com - http://www.wijkscan.com/arcgis/rest/services
-         apl16 @ maps.esri.com - http://maps.esri.com/apl16/rest/services
-         */
-
-
-      }
-    }
-
-    /**
-     *
-     * @returns {*}
-     */
-    function loadServerList() {
-      var serverList = null;
-      if(cookie.isSupported()) {
-        var serverListCookie = cookie('register-services-config');
-        if(serverListCookie) {
-          serverList = json.parse(serverListCookie);
-        } else {
-          serverList = {servers: []};
-          saveServerList(serverList);
-        }
-      }
-      return serverList;
-    }
-
-    /**
-     *
-     * @param serverList
-     */
-    function saveServerList(serverList) {
-      if(cookie.isSupported()) {
-        cookie('register-services-config', json.stringify(serverList), {expires: 360});
-      }
-    }
-
-    /**
-     *
-     */
-    function clearServerList() {
-      if(cookie.isSupported()) {
-        dojo.cookie('register-services-config', '...deleting....', {expires: -1});
-      }
-    }
-
-    /*
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     */
-
-
-    /**
-     * UPDATE SERVER URL
-     *
-     */
-    function updateServerUrl() {
-
-      // SERVER AND INSTANCE //
-      var agsServer = registry.byId('agsServer').get('value');
-      var instance = registry.byId('agsInstance').get('value');
-
-      // SERVICES DIRECTORY URL //
-      var contentServerUrl = lang.replace("{0}//{1}/{2}/rest/services", [location.protocol, (agsServer || '[Server]'), (instance || '[Instance]')]);
-
-      // UPDATE SERVICES DIRECTORY LINK //
-      dom.byId('agsServerInstance').innerHTML = contentServerUrl;
-      dom.byId('agsServerInstance').href = contentServerUrl;
-
-      registry.byId('getServerFolders').set('disabled', (!agsServer || !instance));
-      registry.byId('saveServerBtn').set('disabled', true);
-
-      // CLEAR SERVICES DIRECTORY UI //
-      clearServicesDirectoryUI();
-
-    }
-
-    /**
-     * GET ARCGIS SERVER SERVICES
-     *
-     */
-    function getServerFolders() {
-
-      // CLEAR SERVICES DIRECTORY UI //
-      //clearServicesDirectoryUI();
-
-      // UPDATE CONNECTION STATUS //
-      dom.byId('connectStatus').innerHTML = "Requesting folders information...";
-
-      registry.byId('saveServerBtn').set('disabled', true);
-
-      // SERVER URL //
-      var agsServer = registry.byId('agsServer').get('value');
-      var instance = registry.byId('agsInstance').get('value');
-      var arcgisServerUrl = dom.byId('agsServerInstance').href;
-
-      // CONNECT TO SERVICES DIRECTORY //
-      agsServerUtils.connect(agsServer, instance, arcgisServerUrl).then(lang.hitch(this, function (response) {
-
-        // UPDATE CONNECT STATUS //
-        dom.byId('connectStatus').innerHTML = "Connection successful.";
-
-        registry.byId('saveServerBtn').set('disabled', false);
-
-        // ADD OTHER FOLDERS TO LIST //
-        if(response.folders) {
-          var serverFolders = array.map(response.folders, function (folderName) {
-            return {
-              id: folderName,
-              title: folderName
-            };
-          });
-          // ROOT FOLDER //
-          var rootFolder = {
-            id: '',
-            title: registry.byId('agsInstance').get('value'),
-            isRoot: true
-          };
-          // FOLDER STORE //
-          var serverFoldersStore = new Observable(new Memory({
-            data: [rootFolder].concat(serverFolders)
-          }));
-          // SET LISTS STORE //
-          serverFoldersList.set('store', serverFoldersStore);
-        }
-
-      }), function (error) {
-        dom.byId('connectStatus').innerHTML = "";
-        put(dom.byId('connectStatus'), 'span.error', error.message);
-      });
-    }
-
-    /**
-     * GET SERVICES IN SERVICES DIRECTORY FOLDER
-     *
-     * @param evt
-     */
-    function getServerServicesInfo(evt) {
-
-      if(this.getServicesDeferred) {
-        this.getServicesDeferred.cancel();
-        this.getServicesDeferred = null;
-      }
-
-      var emptyServicesStore = new Observable(new Memory({data: []}));
-      serverServicesList.set('store', emptyServicesStore);
-
-      // PORTAL FOLDER //
-      var portalFolder = evt.rows[0].data;
-
-      // GET FOLDER SERVICES
-      var includeSubLayerDetails = false;
-      this.getServicesDeferred = agsServerUtils.getServicesInfo(portalFolder.id, includeSubLayerDetails).then(lang.hitch(this, function (serviceInfos) {
-        console.log("SERVICE INFO --- ", serviceInfos);
-
-        // SERVICES STORE //
-        var serverFolderServicesStore = new Observable(new Memory({
-          data: serviceInfos
-        }));
-        // SET LISTS STORE //
-        serverServicesList.set('store', serverFolderServicesStore);
-      }));
-    }
-
-    /**
-     *
-     */
-    function clearServicesDirectoryUI() {
-
-      //agsServerUtils.disconnect();
-
-      // UPDATE CONNECTION STATUS //
-      dom.byId('connectStatus').innerHTML = "";
-
-      // FOLDER STORE //
-      var serverFoldersStore = new Observable(new Memory({
-        data: []
-      }));
-      // SET LISTS STORE //
-      serverFoldersList.set('store', serverFoldersStore);
-
-      // SERVICES STORE //
-      var serverFolderServicesStore = new Observable(new Memory({
-        data: []
-      }));
-      // SET LISTS STORE //
-      serverServicesList.set('store', serverFolderServicesStore);
-    }
-
-    /**
-     *
-     * @param selectAll
-     */
-    function updateServiceItemSelection(selectAll) {
-      if(serverServicesList.store.data.length > 0) {
-        if(selectAll) {
-          serverServicesList.selectAll();
-        } else {
-          serverServicesList.clearSelection();
-        }
-        registry.byId('rs_selectNoneBtn').set('disabled', !selectAll);
-        registry.byId('registerServicesBtn').set('disabled', !selectAll);
-      }
-    }
-
-    /**
-     *
-     * @param disabled
-     */
-    function updateRegisterServicesOption(disabled) {
-      query("#sourceItemsController .dijitToggleButton").forEach(lang.hitch(this, function (node) {
-        var toggleButton = registry.byNode(node);
-        if(toggleButton && (toggleButton.label === "Register Services")) {
-          toggleButton.set('disabled', disabled);
-        }
-      }));
-    }
-
-    /**
-     *
-     */
-    function updateRegisterServicesBtn() {
-      var selectedItems = [];
-      for (var id in serverServicesList.selection) {
-        if(serverServicesList.selection[id]) {
-          selectedItems.push(serverServicesList.row(id).data);
-        }
-      }
-      registry.byId('registerServicesBtn').set('disabled', (selectedItems.length === 0));
-      registry.byId('rs_selectNoneBtn').set('disabled', (selectedItems.length === 0));
-    }
-
-    /**
-     *
-     */
-    function applyCommonProperties() {
-      var commonItemProperties = {
-        tags: registry.byId('commonTagsInput').get('value'),
-        accessInformation: registry.byId('commonAccessInput').get('value'),
-        licenseInfo: registry.byId('commonCopyrightInput').get('value')
+      var searchNode = {
+        id: rootId + "_search",
+        title: "Search",
+        declaredClass: "searchRoot",
+        children: null
       };
-      for (var id in serverServicesList.selection) {
-        if(serverServicesList.selection[id]) {
-          var item = serverServicesList.store.get(id);
-          item = lang.mixin(item, commonItemProperties);
-          serverServicesList.store.put(item);
-        }
-      }
-    }
 
-    /**
-     *
-     */
-    function registerSelectedServiceItems() {
+      var favoritesNode = {
+        id: portalUser.favGroupId,
+        title: "Favorites",
+        declaredClass: "favoritesRoot",
+        children: null
+      };
 
-      var selectedFolderItem = null;
-      for (var folderId in sourceFoldersList.selection) {
-        if(sourceFoldersList.selection[folderId]) {
-          selectedFolderItem = sourceFoldersList.row(folderId).data;
-          break;
-        }
-      }
+      var foldersNode = {
+        id: rootId + "_folders",
+        title: "Folders",
+        declaredClass: "foldersRoot",
+        children: null
+      };
 
-      var arcGISServerUrl = dom.byId('agsServerInstance').href;
-      var selectedServiceItems = [];
-      for (var serviceId in serverServicesList.selection) {
-        if(serverServicesList.selection[serviceId]) {
-          selectedServiceItems.push(serverServicesList.row(serviceId).data);
-        }
-      }
+      var tagsNode = {
+        id: rootId + "_tags",
+        title: "Tags",
+        declaredClass: "tagsRoot",
+        children: null
+      };
 
-      var registerSubLayers = registry.byId('registerSubLayersChk').get('checked');
-      var shareItemsAsPublic = registry.byId('shareToPublicChk').get('checked');
+      var groupsNode = {
+        id: rootId + "_groups",
+        title: "Groups",
+        declaredClass: "groupsRoot",
+        children: null
+      };
 
-      arcGISOnlineUtils.registerServices(arcGISServerUrl, selectedServiceItems, registerSubLayers, selectedFolderItem, shareItemsAsPublic).then(lang.hitch(this, function (serviceItems) {
-        if(shareItemsAsPublic) {
-          array.forEach(serviceItems, lang.hitch(this, function (serviceItem) {
-            serverServicesList.store.put(serviceItem);
-          }));
-          alert("Items have been registered with ArcGIS Online and shared with everyone.");
-        } else {
-          alert("Items have been registered with ArcGIS Online.");
-        }
-      }), lang.hitch(this, function (error) {
-        console.error(error);
+      var rootNode = {
+        id: rootId,
+        title: rootId,
+        children: [searchNode, favoritesNode, foldersNode, tagsNode, groupsNode]
+      };
+
+      var getFoldersDeferred = portalUser.getFolders().then(lang.hitch(this, function (folders) {
+        var userRootFolder = {
+          id: '',
+          title: portalUser.username,
+          declaredClass: "esri.arcgis.PortalFolder"
+        };
+        foldersNode.children = [userRootFolder].concat(folders);
       }));
+
+      var getTagsDeferred = portalUser.getTags().then(lang.hitch(this, function (tagItems) {
+        tagsNode.children = array.map(tagItems, function (tagItem) {
+          return {
+            id: tagItem.tag,
+            declaredClass: "tagItem",
+            title: tagItem.tag,
+            tag: tagItem.tag};
+        });
+      }));
+
+      var getGroupsDeferred = portalUser.getGroups().then(lang.hitch(this, function (groups) {
+        groupsNode.children = groups;
+      }));
+
+      all([getFoldersDeferred, getGroupsDeferred, getTagsDeferred]).then(lang.hitch(this, function () {
+
+        var memoryStore = new Observable(new Memory({
+          idProperty: 'id',
+          getChildren: getChildren,
+          data: [rootNode]
+        }));
+
+        var treeModel = new ObjectStoreModel({
+          store: memoryStore,
+          query: {id: rootId},
+          mayHaveChildren: mayHaveChildren,
+          labelAttr: 'title'
+        });
+
+        var userGroupsTree = new Tree({
+          model: treeModel,
+          persist: false,
+          showRoot: false,
+          getIconClass: lang.hitch(this, getIconClass),
+          //getTooltip: this.getTooltip,
+          onClick: lang.hitch(this, onTreeNodeClick)
+        }, domConstruct.create('div', {}, dom.byId('sourcesTree'), 'only'));
+
+        userGroupsTree.startup();
+
+      }));
+
     }
 
-    /*
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     */
+    function getChildren(item) {
+      return item.children;
+    }
+
+    function mayHaveChildren(item) {
+      return ((item.children) && (item.children.length > 0));
+    }
+
+    function getIconClass(item, opened) {
+
+      var iconClass = 'dijitIconError';
+
+      switch (item.declaredClass) {
+        case "searchRoot":
+          iconClass = "searchItem";
+          break;
+        case "favoritesRoot":
+          iconClass = "favoriteItem";
+          break;
+        case "foldersRoot":
+          iconClass = "folderItem";
+          break;
+        case "groupsRoot":
+          iconClass = 'groupItem';
+          break;
+        case "tagsRoot":
+          iconClass = 'tagItem';
+          break;
+        case 'esri.arcgis.PortalFolder':
+          iconClass = "folderItem";
+          break;
+        case 'esri.arcgis.PortalGroup':
+          iconClass = 'groupItem';
+          break;
+        case "tagItem":
+          iconClass = 'tagItem';
+          break;
+        default:
+          console.log("Unknown item type: ", item);
+          break;
+      }
+
+      return iconClass;
+    }
+
+    function onTreeNodeClick(item) {
+
+      sourceItemList.set('store', null);
+
+      switch (item.declaredClass) {
+        case "favoritesRoot":
+          getGroupItemStore(item).then(updateSourceItemList);
+          break;
+        case 'esri.arcgis.PortalFolder':
+          getFolderItemStore(item).then(updateSourceItemList);
+          break;
+        case 'esri.arcgis.PortalGroup':
+          getGroupItemStore(item).then(updateSourceItemList);
+          break;
+        case "tagItem":
+          getTagsItemStore(item).then(updateSourceItemList);
+          break;
+        default:
+          console.log("Unknown item type: ", item);
+          break;
+      }
+
+    }
+
+    /*function getChildren(item) {
+
+
+     var deferred = new Deferred();
+
+     if(item.children) {
+     deferred.resolve(item.children);
+     } else {
+
+     switch (item.declaredClass) {
+
+     case 'esri.arcgis.PortalFolder':
+
+     item.getItems().then(lang.hitch(this, function (folderItems) {
+     item.children = folderItems;
+     this.put(item);
+     deferred.resolve(item.children);
+     }));
+
+     break;
+
+     case 'esri.arcgis.PortalGroup':
+
+     item.queryItems({num: 1000}).then(lang.hitch(this, function (queryResult) {
+     item.children = array.map(queryResult.results, lang.hitch(this, function (groupItem) {
+     return lang.mixin(groupItem, {
+     title: (groupItem.title || groupItem.name || groupItem.type),
+     treeId: item.id + '.' + groupItem.id,
+     parent: item.id
+     });
+     }));
+     this.put(item);
+     deferred.resolve(item.children);
+     }));
+
+     break;
+     }
+     }
+
+     return deferred.promise;
+     }*/
 
     // BUILD SEARCH PARAMETER UI //
     function buildSearchParameterUI() {
 
       var parameterListPane = registry.byId('parameterListPane');
 
-      array.forEach(arcGISSearchUtils.searchParameterIds, lang.hitch(this, function (searchParameterId) {
-        var parameter = arcGISSearchUtils.getSearchParameter(searchParameterId);
+      for (var paramName in searchParameters) {
+        if(searchParameters.hasOwnProperty(paramName)) {
+          var parameter = searchParameters[paramName];
 
-        var parameterPane = new TitlePane({
-          id: "parameterPane." + parameter.label,
-          "class": "parameterTitlePane",
-          title: parameter.label,
-          open: false
-        }, put(parameterListPane.containerNode, 'div'));
+          var parameterPane = new TitlePane({
+            id: "parameterPane." + paramName,
+            "class": "parameterTitlePane",
+            title: parameter.label,
+            open: false
+          }, put(parameterListPane.containerNode, 'div'));
 
-        var parameterDescNode = put(parameterPane.containerNode, 'div.parameterDescNode', parameter.description);
-        var parameterInputsNode = put(parameterPane.containerNode, 'div.parameterInputsNode');
-        var parameterInputs = [];
+          var parameterDescNode = put(parameterPane.containerNode, 'div.parameterDescNode', parameter.description);
+          var parameterInputsNode = put(parameterPane.containerNode, 'div.parameterInputsNode');
+          var parameterInputs = [];
 
-        switch (parameter.paramType) {
-          case "string":
-            put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
-            var stringInput = new TextBox({
-              intermediateChanges: true,
-              placeHolder: lang.replace("Enter {label} here...", parameter),
-              "class": "parameterInput parameter_" + parameter.label,
-              parameterName: parameter.id
-            }, put(parameterInputsNode, 'div'));
-            stringInput.startup();
-            createClearImg(parameterInputsNode, stringInput);
-            parameterInputs.push(stringInput);
-
-            if(parameter.range) {
-              put(parameterInputsNode, 'div.parameterLabelNode', "TO");
+          switch (parameter.paramType) {
+            case "string":
               put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
-              var stringInput2 = new TextBox({
+              var stringInput = new TextBox({
                 intermediateChanges: true,
                 placeHolder: lang.replace("Enter {label} here...", parameter),
-                "class": "parameterInput parameter_" + parameter.label,
-                parameterName: parameter.id
+                "class": "parameterInput parameter_" + paramName,
+                parameterName: paramName
               }, put(parameterInputsNode, 'div'));
-              stringInput2.startup();
-              createClearImg(parameterInputsNode, stringInput2);
-              parameterInputs.push(stringInput2);
-            }
-            break;
+              stringInput.startup();
+              createClearImg(parameterInputsNode, stringInput);
+              parameterInputs.push(stringInput);
 
-          case "number":
-            put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
-            var numberInput = new NumberTextBox({
-              intermediateChanges: true,
-              placeHolder: lang.replace("Enter {label} here...", parameter),
-              "class": "parameterInput parameter_" + parameter.label,
-              parameterName: parameter.id
-            }, put(parameterInputsNode, 'div'));
-            numberInput.startup();
-            createClearImg(parameterInputsNode, numberInput);
-            parameterInputs.push(numberInput);
+              if(parameter.range) {
+                put(parameterInputsNode, 'div.parameterLabelNode', "TO");
+                put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
+                var stringInput2 = new TextBox({
+                  intermediateChanges: true,
+                  placeHolder: lang.replace("Enter {label} here...", parameter),
+                  "class": "parameterInput parameter_" + paramName,
+                  parameterName: paramName
+                }, put(parameterInputsNode, 'div'));
+                stringInput2.startup();
+                createClearImg(parameterInputsNode, stringInput2);
+                parameterInputs.push(stringInput2);
+              }
+              break;
 
-            if(parameter.range) {
-              put(parameterInputsNode, 'div.parameterLabelNode', "TO");
+            case "number":
               put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
-              var numberInput2 = new NumberTextBox({
+              var numberInput = new NumberTextBox({
                 intermediateChanges: true,
                 placeHolder: lang.replace("Enter {label} here...", parameter),
-                "class": "parameterInput parameter_" + parameter.label,
-                parameterName: parameter.id
+                "class": "parameterInput parameter_" + paramName,
+                parameterName: paramName
               }, put(parameterInputsNode, 'div'));
-              numberInput2.startup();
-              createClearImg(parameterInputsNode, numberInput2);
-              parameterInputs.push(numberInput2);
-            }
-            break;
+              numberInput.startup();
+              createClearImg(parameterInputsNode, numberInput);
+              parameterInputs.push(numberInput);
 
-          case "date":
-            put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
-            var dateInput = new DateTextBox({
-              intermediateChanges: true,
-              placeHolder: lang.replace("Enter {label} here...", parameter),
-              "class": "parameterInput parameter_" + parameter.label,
-              parameterName: parameter.id
-            }, put(parameterInputsNode, 'div'));
-            dateInput.startup();
-            createClearImg(parameterInputsNode, dateInput);
-            parameterInputs.push(dateInput);
+              if(parameter.range) {
+                put(parameterInputsNode, 'div.parameterLabelNode', "TO");
+                put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
+                var numberInput2 = new NumberTextBox({
+                  intermediateChanges: true,
+                  placeHolder: lang.replace("Enter {label} here...", parameter),
+                  "class": "parameterInput parameter_" + paramName,
+                  parameterName: paramName
+                }, put(parameterInputsNode, 'div'));
+                numberInput2.startup();
+                createClearImg(parameterInputsNode, numberInput2);
+                parameterInputs.push(numberInput2);
+              }
+              break;
 
-            if(parameter.range) {
-              put(parameterInputsNode, 'div.parameterLabelNode', "TO");
+            case "date":
               put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
-              var dateInput2 = new DateTextBox({
+              var dateInput = new DateTextBox({
                 intermediateChanges: true,
                 placeHolder: lang.replace("Enter {label} here...", parameter),
-                "class": "parameterInput parameter_" + parameter.label,
-                parameterName: parameter.id
+                "class": "parameterInput parameter_" + paramName,
+                parameterName: paramName
               }, put(parameterInputsNode, 'div'));
-              dateInput2.startup();
-              createClearImg(parameterInputsNode, dateInput2);
-              parameterInputs.push(dateInput2);
-            }
-            break;
+              dateInput.startup();
+              createClearImg(parameterInputsNode, dateInput);
+              parameterInputs.push(dateInput);
 
-          case "extent":
-            put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
-            var extentInput = new TextBox({
-              intermediateChanges: true,
-              placeHolder: lang.replace("Enter {label} here...", parameter),
-              "class": "parameterInput parameter_" + parameter.label,
-              parameterName: parameter.id
-            }, put(parameterInputsNode, 'div'));
-            extentInput.startup();
-            createClearImg(parameterInputsNode, extentInput);
-            parameterInputs.push(extentInput);
-            break;
+              if(parameter.range) {
+                put(parameterInputsNode, 'div.parameterLabelNode', "TO");
+                put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
+                var dateInput2 = new DateTextBox({
+                  intermediateChanges: true,
+                  placeHolder: lang.replace("Enter {label} here...", parameter),
+                  "class": "parameterInput parameter_" + paramName,
+                  parameterName: paramName
+                }, put(parameterInputsNode, 'div'));
+                dateInput2.startup();
+                createClearImg(parameterInputsNode, dateInput2);
+                parameterInputs.push(dateInput2);
+              }
+              break;
 
-          case "list":
-            put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
-            var selectInput = new Select({
-              "class": "parameterInput parameter_" + parameter.label,
-              parameterName: parameter.id,
-              options: array.map(parameter.list, function (listItem) {
-                return {label: listItem, value: listItem};
-              })
-            }, put(parameterInputsNode, 'div'));
-            selectInput.startup();
-            createClearImg(parameterInputsNode, selectInput);
-            parameterInputs.push(selectInput);
-            break;
+            case "extent":
+              put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
+              var extentInput = new TextBox({
+                intermediateChanges: true,
+                placeHolder: lang.replace("Enter {label} here...", parameter),
+                "class": "parameterInput parameter_" + paramName,
+                parameterName: paramName
+              }, put(parameterInputsNode, 'div'));
+              extentInput.startup();
+              createClearImg(parameterInputsNode, extentInput);
+              parameterInputs.push(extentInput);
+              break;
 
-          default:
-            console.warn("Unknown Parameter Type: ", parameter.paramType);
+            case "list":
+              put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
+              var selectInput = new Select({
+                "class": "parameterInput parameter_" + paramName,
+                parameterName: paramName,
+                options: array.map(parameter.list, function (listItem) {
+                  return { label: listItem, value: listItem };
+                })
+              }, put(parameterInputsNode, 'div'));
+              selectInput.startup();
+              createClearImg(parameterInputsNode, selectInput);
+              parameterInputs.push(selectInput);
+              break;
+
+            default:
+              console.warn("Unknown Parameter Type: ", parameter.paramType);
+          }
+
+          array.forEach(parameterInputs, lang.hitch(this, function (parameterInput) {
+            /*if(paramName === 'owner') {
+             parameterInput.set('value', portalUser.username);
+             }*/
+            parameterInput.on('change', lang.hitch(this, updateParameterQuery));
+          }));
+
         }
-
-        array.forEach(parameterInputs, lang.hitch(this, function (parameterInput) {
-          /*if(parameter.label === 'owner') {
-           parameterInput.set('value', portalUser.username);
-           }*/
-          parameterInput.on('change', lang.hitch(this, updateParameterQuery));
-        }));
-
-      }));
-
+      }
     }
 
     // FIND SIMILAR TAGS //
@@ -1176,65 +846,12 @@ require([
         sourceTagsList.clearSelection();
         domClass.add('sourceItemsCount', 'searching');
         dom.byId('sourceItemsCount').innerHTML = 'Searching...';
-        var emptyStore = new Observable(new Memory({data: []}));
+        var emptyStore = new Observable(new Memory({ data: [] }));
         sourceItemList.set('store', emptyStore);
         searchPortalItemsByQuery(searchQuery).then(updateSourceItemList);
       }
     }
 
-    function getServicesColumns() {
-      var columns = [];
-      columns.push({
-        needsQuotes: true,
-        label: "Name",
-        field: "serviceName",
-        renderCell: renderServiceItemName
-      });
-      columns.push({
-        needsQuotes: true,
-        label: "Type",
-        field: "type"
-      });
-      columns.push({
-        needsQuotes: true,
-        label: "Tags",
-        field: "tags"
-      });
-      columns.push({
-        needsQuotes: true,
-        label: "Access",
-        field: "accessInformation"
-      });
-      columns.push({
-        needsQuotes: true,
-        label: "Copyright",
-        field: "licenseInfo"
-      });
-      columns.push({
-        needsQuotes: true,
-        label: "Item Id",
-        field: "itemId"
-      });
-      /* columns.push({
-       needsQuotes: true,
-       label: "Dynamic Layers",
-       field: "supportsDynamicLayers"
-       });*/
-
-      return columns;
-    }
-
-    // RENDER FOLDER ROW //
-    function renderServerFolderRow(object, options) {
-      var itemNode = put("div");
-      var folderClass = object.isRoot ? '.folderItem.rootFolder.listItem' : '.folderItem.listItem';
-      put(itemNode, "div" + folderClass, object.title);
-      return itemNode;
-    }
-
-    function renderServiceItemName(object, value, node, options) {
-      return put(lang.replace("div.iconItem.icon{type}", object), value);
-    }
 
     // GET ARRAY OF COLUMNS //
     function getColumns() {
@@ -1391,38 +1008,18 @@ require([
 
     // RENDER ITEM THUMBNAIL //
     function renderItemThumbnail(object, value, node, options) {
-
-      return put("img.itemThumbnail", {src: value || "./images/no_preview.gif"});
-
-      /*var thumbnailImage =  put("img.itemThumbnail");
-       getImage(value).then(lang.hitch(this, function (evt) {
-       thumbnailImage.src = value;
-       }), lang.hitch(this, function (error) {
-       thumbnailImage.src = "./images/no_preview.gif";
-       }));
-       return thumbnailImage;*/
-    }
-
-    function getImage(url) {
-      var deferred = new Deferred();
-
-      var itemThumbnailImage = new Image();
-      itemThumbnailImage.onload = deferred.resolve;
-      itemThumbnailImage.onerror = deferred.reject;
-      itemThumbnailImage.src = url;
-
-      return deferred.promise;
+      return value ? put("img.itemThumbnail", {src: value}) : put("span", "No Thumbnail");
     }
 
     // RENDER ITEM TITLE TO SHOW TYPE ICON //
     function renderItemTitle(object, value, node, options) {
       var itemClass = '.icon' + object.type.replace(/ /g, '');
-      return put("div.iconItem." + itemClass, value || "[No Title]");
+      return put("div.iconItem." + itemClass, value);
     }
 
     // RENDER ITEM DESCRIPTION //
     function renderItemDescription(object, value, node, options) {
-      return put("div.descNode", {innerHTML: value || "[No Description]"});
+      return put("div.descNode", {innerHTML: value});
     }
 
 
@@ -1482,11 +1079,9 @@ require([
         }
       });
 
-      var objectStore = new ObjectStore({
-        objectStore: new Memory({
-          data: itemTypes
-        })
-      });
+      var objectStore = new ObjectStore({ objectStore: new Memory({
+        data: itemTypes
+      })});
       registry.byId('itemTypeSelect').setStore(objectStore);
       registry.byId('itemTypeSelect').set('value', 'none');
     }
@@ -1504,10 +1099,9 @@ require([
       sourceTagsList.clearSelection();
       sourceFoldersList.clearSelection();
 
-      var emptyStore = new Observable(new Memory({data: []}));
+      var emptyStore = new Observable(new Memory({ data: [] }));
       sourceItemList.set('store', emptyStore, {}, {count: 1000, sort: 'title'});
       registry.byId('sourceItemGallery').set('content', "");
-      registry.byId('csvTextArea').set('value', "");
 
       var panelContent = put('div.panelContent');
       switch (selectedChild.title) {
@@ -1525,9 +1119,6 @@ require([
           break;
       }
       registry.byId('sourcePanelInfo').set('content', panelContent);
-
-      updateRegisterServicesOption(true);
-
     }
 
     function displayItemDetails(row) {
@@ -1555,7 +1146,6 @@ require([
 
     // SOURCE FOLDER ITEM SELECTED //
     function sourceFolderSelected(evt) {
-      /*if(!domClass.contains(evt.rows[0].element, 'paneDisabled')) {*/
       sourceGroupsList.clearSelection();
       sourceTagsList.clearSelection();
       domClass.add('sourceItemsCount', 'searching');
@@ -1565,16 +1155,11 @@ require([
       if(portalFolder) {
         getFolderItemStore(portalFolder).then(updateSourceItemList);
         //displayItemDetails(evt.rows[0]);
-        updateRegisterServicesOption(false);
-      } else {
-        updateRegisterServicesOption(true);
       }
-      /*}*/
     }
 
     // SOURCE GROUP ITEM SELECTED //
     function sourceGroupSelected(evt) {
-      /*if(!domClass.contains(evt.rows[0].element, 'paneDisabled')) {*/
       sourceFoldersList.clearSelection();
       sourceTagsList.clearSelection();
       domClass.add('sourceItemsCount', 'searching');
@@ -1584,12 +1169,10 @@ require([
       if(portalGroup) {
         getGroupItemStore(portalGroup).then(updateSourceItemList);
       }
-      /*}*/
     }
 
     // SOURCE TAG ITEM SELECTED //
     function sourceTagSelected(evt) {
-      /*if(!domClass.contains(evt.rows[0].element, 'paneDisabled')) {*/
       sourceFoldersList.clearSelection();
       sourceGroupsList.clearSelection();
       domClass.add('sourceItemsCount', 'searching');
@@ -1599,7 +1182,6 @@ require([
       if(userTag) {
         getTagsItemStore(userTag).then(updateSourceItemList);
       }
-      /*}*/
     }
 
     // SEARCH FOR ITEMS BY QUERY //
@@ -1654,13 +1236,14 @@ require([
       }
 
       var queryParams = {
-        q: '',
+        q: lang.replace("group:{id}", portalGroup),
         sortField: 'title',
         sortOrder: 'asc',
         start: 0,
         num: 100
       };
-      getGroupItemsDeferred = searchGroupItems(portalGroup, queryParams).then(lang.hitch(this, function (allResults) {
+      //getGroupItemsDeferred = searchGroupItems(portalGroup, queryParams).then(lang.hitch(this, function (allResults) {
+      getGroupItemsDeferred = searchPortalItems(queryParams).then(lang.hitch(this, function (allResults) {
         getGroupItemsDeferred = null;
         var itemStore = new Observable(new Memory({
           data: allResults
@@ -1713,23 +1296,24 @@ require([
      * @param allResults
      * @returns {*}
      */
-    function searchGroupItems(portalGroup, queryParams, allResults) {
-      var deferred = new Deferred();
+    /*function searchGroupItems(portalGroup, queryParams, allResults) {
+     var deferred = new Deferred();
 
-      if(!allResults) {
-        allResults = [];
-      }
-      portalGroup.queryItems(queryParams).then(lang.hitch(this, function (response) {
-        allResults = allResults.concat(response.results);
-        if(response.nextQueryParams.start > 0) {
-          searchGroupItems(portalGroup, response.nextQueryParams, allResults).then(deferred.resolve, deferred.reject);
-        } else {
-          deferred.resolve(allResults);
-        }
-      }));
+     if(!allResults) {
+     allResults = [];
+     }
+     //portalGroup.queryItems(queryParams).then(lang.hitch(this, function (response) {
+     portalUser.portal.queryItems(queryParams).then(lang.hitch(this, function (response) {
+     allResults = allResults.concat(response.results);
+     if(response.nextQueryParams.start > 0) {
+     searchGroupItems(portalGroup, response.nextQueryParams, allResults).then(deferred.resolve, deferred.reject);
+     } else {
+     deferred.resolve(allResults);
+     }
+     }));
 
-      return deferred.promise;
-    }
+     return deferred.promise;
+     }*/
 
     /**
      * RECURSIVELY SEARCH UNTIL ALL RESULTS ARE RETURNED
@@ -1803,7 +1387,7 @@ require([
           })
         });
 
-        put(galleryItemNode, "div.galleryItemTitle.icon" + itemClass, result.title || "[No Title]");
+        put(galleryItemNode, "div.galleryItemTitle.icon" + itemClass, result.title);
         put(galleryItemNode, "img.galleryItemThumbnail", {src: result.thumbnailUrl || "./images/no_preview.gif"});
 
       }));
@@ -1905,7 +1489,7 @@ require([
         countsItemList.startup();
         countsItemList.on(".dgrid-row:click", lang.partial(displayItemInAGOL, countsItemList));
       }
-      var itemStore = new Observable(new Memory({data: allResults}));
+      var itemStore = new Observable(new Memory({ data: allResults }));
       countsItemList.set('store', itemStore);
 
       //registry.byId('applySyncCountsBtn').set('disabled', true);
@@ -1974,14 +1558,14 @@ require([
               }, {
                 usePost: true
               }).then(lang.hitch(this, function (response) {
-                if(response.success) {
-                  userItem.itemCount = userItem.numViews;
-                  //userItem.countDiff = 1.0;
-                  userItem.countDiff = (item.numViews / userItem.numViews);
-                  countsItemList.store.put(userItem);
-                  sourceItemList.store.put(userItem);
-                }
-              }));
+                    if(response.success) {
+                      userItem.itemCount = userItem.numViews;
+                      //userItem.countDiff = 1.0;
+                      userItem.countDiff = (item.numViews / userItem.numViews);
+                      countsItemList.store.put(userItem);
+                      sourceItemList.store.put(userItem);
+                    }
+                  }));
             }));
             //}
           }));
@@ -2028,7 +1612,7 @@ require([
         tagItemList.on("dgrid-select", lang.hitch(this, tagItemSelected));
         tagItemList.on("dgrid-deselect", lang.hitch(this, tagItemSelected));
       }
-      var itemStore = new Observable(new Memory({data: allResults}));
+      var itemStore = new Observable(new Memory({ data: allResults }));
       tagItemList.set('store', itemStore);
 
 
@@ -2050,7 +1634,7 @@ require([
         on(registry.byId('replaceTagBtn'), 'click', lang.hitch(this, replaceTagsFromSelection));
 
       }
-      var tagStore = new Observable(new Memory({data: tagItems}));
+      var tagStore = new Observable(new Memory({ data: tagItems }));
       tagsList.set('store', tagStore);
       tagsList.sort('tag', false);
 
@@ -2302,12 +1886,12 @@ require([
         }, {
           usePost: true
         }).then(lang.hitch(this, function (response) {
-          if(response.success) {
-            deferred.resolve(userItem);
-          } else {
-            deferred.reject();
-          }
-        }));
+              if(response.success) {
+                deferred.resolve(userItem);
+              } else {
+                deferred.reject();
+              }
+            }));
       }));
 
       return deferred.promise;
@@ -2350,7 +1934,7 @@ require([
         });
         deferred.resolve(cleanedTags);
       }));
-      var cancelBtn = new Button({label: "Cancel"}, put(actionBarNode, 'div'));
+      var cancelBtn = new Button({ label: "Cancel" }, put(actionBarNode, 'div'));
       cancelBtn.on('click', lang.hitch(this, function () {
         addTagDialog.hide();
         deferred.reject();

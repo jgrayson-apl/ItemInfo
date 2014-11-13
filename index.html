@@ -1,149 +1,274 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
-    <title>ArcGIS Item Information</title>
-    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.8/js/dgrid/css/dgrid.css">
-    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.8/js/dgrid/css/skins/claro.css">
-    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.8/js/esri/css/esri.css"/>
-    <link rel="stylesheet" type="text/css" href="index.css">
-    <script type="text/javascript">
-      var dojoConfig = {
-        parseOnLoad: true
-      };
-    </script>
-    <script type="text/javascript" src="//js.arcgis.com/3.8/"></script>
-    <script type="text/javascript" src="index.js"></script>
-    <script type="text/javascript" src="AGSSearchUtils.js"></script>
-    <script type="text/javascript">
-      require([
-        "dijit/layout/BorderContainer",
-        "dijit/layout/StackContainer",
-        "dijit/layout/StackController",
-        "dijit/layout/ContentPane",
-        "dijit/Toolbar",
-        "dijit/form/Select",
-        "dijit/form/Textarea",
-        "dijit/form/CheckBox"
-      ]);
-    </script>
-  </head>
-  <body class="claro">
-    <div id="mainContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false">
-      <div id="topToolbar" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
-        <span id="loggedInUser"></span>
-        <div id="appTitle">ArcGIS Item Information</div>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+  <title>ArcGIS Item Information</title>
+  <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.9/js/dojo/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.9/js/dgrid/css/dgrid.css">
+  <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.9/js/dgrid/css/skins/claro.css">
+  <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.9/js/esri/css/esri.css"/>
+  <link rel="stylesheet" type="text/css" href="index.css">
+  <script type="text/javascript">
+    var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+    var dojoConfig = {
+      parseOnLoad: true,
+      packages: [
+        {
+          name: "apl",
+          location: package_path + '/apl'
+        }
+      ]
+    };
+  </script>
+  <script type="text/javascript" src="//js.arcgis.com/3.9/"></script>
+  <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript">
+    require([
+      "dijit/layout/BorderContainer",
+      "dijit/layout/StackContainer",
+      "dijit/layout/StackController",
+      "dijit/layout/ContentPane",
+      "dijit/Toolbar",
+      "dijit/form/DropDownButton",
+      "dijit/TooltipDialog",
+      "dijit/form/Select",
+      "dijit/form/TextBox",
+      "dijit/form/Textarea",
+      "dijit/form/CheckBox"
+    ]);
+  </script>
+</head>
+<body class="claro">
+<div id="mainContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false">
+<div id="topToolbar" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
+  <span id="loggedInUser"></span>
+  <div id="appTitle">ArcGIS Item Information</div>
+</div>
+<div id="typeContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'left',gutters:false,splitter:true">
+  <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px'}">
+    <div id="expandoImage"></div>
+    <span id="sourceListController" data-dojo-type="dijit/layout/StackController" data-dojo-props="containerId:'sourceListsContainer'"></span>
+  </div>
+  <div id="sourceListsContainer" data-dojo-type="dijit/layout/StackContainer" data-dojo-props="region:'center'">
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Folders',iconClass:'folderItem'">
+      <div id="sourceFoldersList"></div>
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Tags',iconClass:'tagItem'">
+      <div id="sourceTagList"></div>
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Groups',iconClass:'groupItem'">
+      <div id="sourceGroupList"></div>
+    </div>
+    <div id="searchPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Search',iconClass:'searchItem'">
+      <div id="searchParametersPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top',splitter:true,style:{height:'25%'}">
+        <div style="margin:10px;float:right;">
+          <div id="applySearchBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,label:'Apply',iconClass:'applyParamsIcon',title:'Retrieve all items that match search parameters. (Must be less than 1,000 items)'"></div>
+          <div id="clearSearchBtn" data-dojo-type="dijit/form/Button" data-dojo-props="label:'Clear',iconClass:'clearParamsIcon',title:'Clear all search parameters.'"></div>
+        </div>
+        <div style="clear:both;">
+          <div id="searchQueryString"></div>
+          <span id="searchQueryResultCount"></span>
+        </div>
       </div>
-      <div id="typeContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'left',gutters:false,splitter:true">
-        <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px'}">
-          <div id="expandoImage"></div>
-          <span id="sourceListController" data-dojo-type="dijit/layout/StackController" data-dojo-props="containerId:'sourceListsContainer'"></span>
+      <div id="parameterListPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
+    </div>
+  </div>
+  <div id="sourcePanelInfo" class="panelInfo" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
+    Display items in a user folder.
+  </div>
+</div>
+<div id="listContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
+  <div id="actionToolbar" data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top'">
+    <div class="actionBar">
+      <label style="font-weight:bolder;">VIEW:&nbsp;</label>
+      <span id="sourceItemsController" data-dojo-type="dijit/layout/StackController" data-dojo-props="containerId:'optionsContainer'"></span>
+    </div>
+    <div class="actionBar">
+      <label style="font-weight:bolder;">FILTERS:&nbsp;</label>
+      <label for="sourceItemsFilterInput" style="font-style:italic;">Title:&nbsp;</label>
+      <input id="sourceItemsFilterInput" type="text" data-dojo-type="dijit/form/TextBox" data-dojo-props="trim:true,intermediateChanges:true,placeHolder:'...no title filter...',style:{width:'200px'}"/>
+      <label for="itemTypeSelect" style="font-style:italic;">Type:&nbsp;</label>
+      <select id="itemTypeSelect" data-dojo-type="dijit/form/Select" data-dojo-props="style:{width:'250px'}"></select>
+      <label for="userOwnedChk" style="font-style:italic;">Owned by Me:&nbsp;</label>
+      <input id="userOwnedChk" data-dojo-type="dijit/form/CheckBox"/>
+      <span data-dojo-type="dijit/ToolbarSeparator"></span>
+      <span id="sourceItemsCount" style="font-weight:bolder;">0 of 0</span>
+    </div>
+  </div>
+  <div id="optionsContainer" data-dojo-type="dijit/layout/StackContainer" data-dojo-props="region:'center'">
+    <div id="detailsPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Details',iconClass:'detailsIcon'">
+      <div id="sourceItemList"></div>
+    </div>
+    <div id="sourceItemGallery" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Gallery',iconClass:'galleryIcon'"></div>
+    <div id="csvOutputPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters:false,title:'CSV',iconClass:'exportIcon'">
+      <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px'}">
+        <label for="useFieldNamesChk" style="font-style:italic;font-size:smaller;">Use Field Names:&nbsp;</label>
+        <input id="useFieldNamesChk" data-dojo-type="dijit/form/CheckBox"/>
+      </div>
+      <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center',style:{overflow:'auto',border:'solid 1px silver'}">
+        <label for="csvTextArea"></label>
+        <textarea id="csvTextArea" data-dojo-type="dijit/form/Textarea" style="width:100%;"></textarea>
+      </div>
+    </div>
+    <div id="tagEditorPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Tag Editor',iconClass:'tagEditorIcon',gutters:false">
+      <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'left',gutters:false,splitter:true,style:{width:'60%'}">
+        <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
+          <label style="font-weight: bolder;">Items:</label>
+          <div id="selectAllBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'selectAllIcon',label:'Select All',title:'Select all items'"></div>
+          <div id="selectNoneBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'selectNoneIcon',label:'Select None',title:'Clear selected items'"></div>
+          <span data-dojo-type="dijit/ToolbarSeparator"></span>
+          <div id="addNewTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'addNewTagIcon',label:'Add New Tags',title:'Add new tags to selected items'"></div>
         </div>
-        <div id="sourceListsContainer" data-dojo-type="dijit/layout/StackContainer" data-dojo-props="region:'center'">
-          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Folders',iconClass:'folderItem'">
-            <div id="sourceFoldersList"></div>
-          </div>
-          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Tags',iconClass:'tagItem'">
-            <div id="sourceTagList"></div>
-          </div>
-          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Groups',iconClass:'groupItem'">
-            <div id="sourceGroupList"></div>
-          </div>
-          <div id="searchPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Search',iconClass:'searchItem'">
-            <div id="searchParametersPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top',splitter:true,style:{height:'25%'}">
-              <div style="margin:10px;float:right;">
-                <div id="applySearchBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,label:'Apply',iconClass:'applyParamsIcon',title:'Retrieve all items that match search parameters. (Must be less than 1,000 items)'"></div>
-                <div id="clearSearchBtn" data-dojo-type="dijit/form/Button" data-dojo-props="label:'Clear',iconClass:'clearParamsIcon',title:'Clear all search parameters.'"></div>
-              </div>
-              <div style="clear:both;">
-                <div id="searchQueryString"></div>
-                <span id="searchQueryResultCount"></span>
-              </div>
-            </div>
-            <div id="parameterListPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
-          </div>
-        </div>
-        <div id="sourcePanelInfo" class="panelInfo" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
-          Display items in a user folder.
+        <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+          <div id="tagItemListPane"></div>
         </div>
       </div>
-      <div id="listContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
-        <div id="actionToolbar" data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top'">
-          <div class="actionBar">
-            <label style="font-weight:bolder;">VIEW:&nbsp;</label>
-            <span id="sourceItemsController" data-dojo-type="dijit/layout/StackController" data-dojo-props="containerId:'optionsContainer'"></span>
-          </div>
-          <div class="actionBar">
-            <label style="font-weight:bolder;">FILTERS:&nbsp;</label>
-            <label for="sourceItemsFilterInput" style="font-style:italic;">Title:&nbsp;</label>
-            <input id="sourceItemsFilterInput" type="text" data-dojo-type="dijit/form/TextBox" data-dojo-props="trim:true,intermediateChanges:true,placeHolder:'...no title filter...',style:{width:'200px'}"/>
-            <label for="itemTypeSelect" style="font-style:italic;">Type:&nbsp;</label>
-            <select id="itemTypeSelect" data-dojo-type="dijit/form/Select" data-dojo-props="style:{width:'250px'}"></select>
-            <label for="userOwnedChk" style="font-style:italic;">Owned by Me:&nbsp;</label>
-            <input id="userOwnedChk" data-dojo-type="dijit/form/CheckBox"/>
-            <span data-dojo-type="dijit/ToolbarSeparator"></span>
-            <span id="sourceItemsCount" style="font-weight:bolder;">0 of 0</span>
-          </div>
+      <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
+        <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
+          <label style="font-weight: bolder;">Tags:</label>
+          <!--<div id="splitTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'splitTagIcon',label:'Split Tags',title:'Split tags'"></div>-->
+          <div id="replaceTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'replaceTagIcon',label:'Replace Tag',title:'Replace tag from selected items'"></div>
+          <div id="removeTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'removeTagIcon',label:'Remove Tag',title:'Remove tag from selected items'"></div>
         </div>
-        <div id="optionsContainer" data-dojo-type="dijit/layout/StackContainer" data-dojo-props="region:'center'">
-          <div id="detailsPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Details',iconClass:'detailsIcon'">
-            <div id="sourceItemList"></div>
-          </div>
-          <div id="sourceItemGallery" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Gallery',iconClass:'galleryIcon'"></div>
-          <div id="csvOutputPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters:false,title:'CSV',iconClass:'exportIcon'">
-            <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px'}">
-              <label for="useFieldNamesChk" style="font-style:italic;font-size:smaller;">Use Field Names:&nbsp;</label>
-              <input id="useFieldNamesChk" data-dojo-type="dijit/form/CheckBox"/>
-            </div>
-            <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center',style:{overflow:'auto',border:'solid 1px silver'}">
-              <textarea id="csvTextArea" data-dojo-type="dijit/form/Textarea" style="width:100%;"></textarea>
-            </div>
-          </div>
-          <div id="tagEditorPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Tag Editor',iconClass:'tagEditorIcon',gutters:false">
-            <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'left',gutters:false,splitter:true,style:{width:'60%'}">
-              <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
-                <label style="font-weight: bolder;">Items:</label>
-                <div id="selectAllBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'selectAllIcon',label:'Select All',title:'Select all items'"></div>
-                <div id="selectNoneBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'selectNoneIcon',label:'Select None',title:'Clear selected items'"></div>
-                <span data-dojo-type="dijit/ToolbarSeparator"></span>
-                <div id="addNewTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'addNewTagIcon',label:'Add New Tags',title:'Add new tags to selected items'"></div>
-              </div>
-              <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
-                <div id="tagItemListPane"></div>
-              </div>
-            </div>
-            <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
-              <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
-                <label style="font-weight: bolder;">Tags:</label>
-                <!--<div id="splitTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'splitTagIcon',label:'Split Tags',title:'Split tags'"></div>-->
-                <div id="replaceTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'replaceTagIcon',label:'Replace Tag',title:'Replace tag from selected items'"></div>
-                <div id="removeTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'removeTagIcon',label:'Remove Tag',title:'Remove tag from selected items'"></div>
-              </div>
-              <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
-                <div id="tagListPane"></div>
-              </div>
-            </div>
-          </div>
-          <!--
-          <div id="syncCountsPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Counts',iconClass:'countsIcon',gutters:false">
-            <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
-              <label style="font-weight: bolder;">Items:</label>
-              <div id="getCountsBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'getCountsIcon',label:'Get Item Counts',title:'Get item counts'"></div>
-              <div id="applySyncCountsBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'syncCountsIcon',label:'Sync Search and Item Counts',title:'Synchronize search amd item counts'"></div>
-            </div>
-            <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
-              <div id="countsItemListPane"></div>
-            </div>
-          </div>
-          -->
-        </div>
-        <div class="panelInfo" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
-          The list of items based on the folder, tag, group, or search.
+        <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+          <div id="tagListPane"></div>
         </div>
       </div>
     </div>
-  </body>
+
+    <div id="registerServicesPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Register Services',iconClass:'registerServicesIcon',gutters:false">
+
+      <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'left',gutters:false,splitter:true,style:{width:'500px'}">
+        <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
+          <table width="100%" height="100%" border="0">
+            <tr>
+              <td align="right">
+                <div style="font-weight:bolder;">ArcGIS Server:</div>
+              </td>
+              <td>
+                <a id="agsServerInstance" target='_blank' title='Display ArcGIS Server Services Directory'>Services
+                  Directory</a>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <div>Server:</div>
+              </td>
+              <td>
+                <input id="agsServer" data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="title:'Name of ArcGIS Server',type:'text',value:'',placeHolder:'server.organization.com',invalidMessage:'Invalid ArcGIS Server',intermediateChanges:true,style:{width:'300px'}"/>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <div>Instance:</div>
+              </td>
+              <td>
+                <input id="agsInstance" data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="title:'Name of ArcGIS Server Instance',type:'text',value:'',placeHolder:'arcgis',invalidMessage:'Invalid Instance',intermediateChanges:true,style:{width:'300px'}"/>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td align="left">
+                <div id="getServerFolders" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'getServerFoldersIcon',label:'Connect',title:'Connect and get list of folders'"></div>
+                <div id="saveServerBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'saveServerIcon',label:'Save',title:'Save current ArcGIS Server'"></div>
+                <div id="loadServerBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'loadServerIcon',label:'Load',title:'Load saved ArcGIS Server'"></div>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td colspan="3" align="left" height="20">
+                <span id="connectStatus" style="height:1em;text-align:center;color:#666;">...</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+          <div id="rs_serverFoldersPane"></div>
+        </div>
+      </div>
+
+      <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
+        <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller',float:'right'}">
+          <div id="rs_selectAllBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'selectAllIcon',label:'Select All',title:'Select all items'"></div>
+          <div id="rs_selectNoneBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'selectNoneIcon',label:'Select None',title:'Clear selected items'"></div>
+          <span data-dojo-type="dijit/ToolbarSeparator"></span>
+          <div id="commonPropsBtn" data-dojo-type="dijit/form/DropDownButton" data-dojo-props="iconClass:'commonPropsIcon',label:'Properties',title:'Set Common Properties'">
+            <div data-dojo-type="dijit/TooltipDialog">
+              <table width="350px" height="150px">
+                <tr>
+                  <td align="right">
+                    <label for="commonTagsInput">Tags:</label>
+                  </td>
+                  <td>
+                    <input id="commonTagsInput" data-dojo-type="dijit/form/TextBox"><br>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right">
+                    <label for="commonAccessInput">Access:</label>
+                  </td>
+                  <td>
+                    <input id="commonAccessInput" data-dojo-type="dijit/form/Textarea"><br>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right">
+                    <label for="commonCopyrightInput">Copyright:</label>
+                  </td>
+                  <td>
+                    <input id="commonCopyrightInput" data-dojo-type="dijit/form/Textarea"><br>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" align="right">
+                    <button id="applyCommonPropertiesBtn" data-dojo-type="dijit/form/Button">Apply</button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <span style="float:right;">
+            <span data-dojo-type="dijit/ToolbarSeparator"></span>
+            <div id="registerServicesBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'registerServicesIcon',label:'Register Services',title:'Register Selected Services'"></div>
+            <input id="registerSubLayersChk" data-dojo-type="dijit/form/CheckBox"/>
+            <label for="registerSubLayersChk" style="vertical-align:middle;">Register Sub-Layers</label>
+            <input id="shareToPublicChk" data-dojo-type="dijit/form/CheckBox"/>
+            <label for="shareToPublicChk" style="vertical-align:middle;">Share with Everyone</label>
+          </span>
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+          <div id="rs_serverServicesPane"></div>
+        </div>
+      </div>
+    </div>
+
+   <!-- <div id="shareItemsPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Share Items',iconClass:'shareItemsIcon',gutters:false">
+      <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left',style:{width:'30%'}">
+        <div id="shareTargetFolder"></div>
+      </div>
+      <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
+    </div>-->
+
+    <!--
+    <div id="syncCountsPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Counts',iconClass:'countsIcon',gutters:false">
+      <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
+        <label style="font-weight: bolder;">Items:</label>
+        <div id="getCountsBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'getCountsIcon',label:'Get Item Counts',title:'Get item counts'"></div>
+        <div id="applySyncCountsBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'syncCountsIcon',label:'Sync Search and Item Counts',title:'Synchronize search amd item counts'"></div>
+      </div>
+      <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+        <div id="countsItemListPane"></div>
+      </div>
+    </div>
+    -->
+
+  </div>
+  <div class="panelInfo" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
+    The list of items based on the folder, tag, group, or search.
+  </div>
+</div>
+</div>
+</body>
 </html>

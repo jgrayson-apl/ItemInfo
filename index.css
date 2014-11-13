@@ -60,7 +60,7 @@ html, body, #mainContainer {
 }
 
 #typeContainer {
-  width  : 500px;
+  width  : 450px;
   margin : 10px 4px 10px 10px;
 }
 
@@ -278,7 +278,7 @@ html, body, #mainContainer {
   border-radius    : 10px !important;
 }
 
-#sourceListsContainer .dijitContentPane, #listContainer .dijitContentPane[region="center"] {
+#sourceListsContainer .dijitContentPane, #registerServicesPane .dijitContentPane, #listContainer .dijitContentPane[region="center"] {
   margin  : 0 !important;
   padding : 0 !important;
 }
@@ -345,6 +345,90 @@ html, body, #mainContainer {
   text-align : center;
 }
 
+.field-serviceName {
+  width : 200px;
+}
+
+.serverAction {
+  color       : #555;
+  font-weight : bolder;
+  font-size   : smaller;
+}
+
+.serverAction:hover {
+  color           : #222;
+  cursor          : pointer;
+  text-decoration : underline;
+}
+
+.serverListDialog .dijitDialogPaneContentArea {
+  margin  : 0 !important;
+  padding : 0 !important;
+}
+
+.serverList {
+  min-width  : 600px;
+  min-height : 300px;
+  padding    : 0;
+  margin     : 0;
+}
+
+.serverItem {
+  margin           : 3px;
+  padding          : 5px;
+  background-color : #eee;
+}
+
+.serverItem:hover {
+  cursor           : pointer;
+  color            : #eee;
+  background-color : #666;
+}
+
+.serverUrl {
+  color     : #666;
+  font-size : smaller;
+}
+
+.serverItem:hover > .serverUrl {
+  color : #ccc;
+}
+
+.removeServer {
+  display          : none;
+  float            : right;
+  width            : 16px;
+  height           : 16px;
+  padding          : 2px;
+  border-radius    : 10px;
+  font-size        : smaller;
+  text-align       : center;
+  vertical-align   : middle;
+  /*font-size        : larger;*/
+  /*color            : #fff;*/
+  /*background-color : red;*/
+  color            : red;
+  background-color : #eee;
+  box-shadow       : 0 0 2px #fff;
+}
+
+.removeServer:hover {
+  font-weight      : bolder;
+  color            : #fff;
+  background-color : red;
+  box-shadow       : 0 0 8px #eee;
+}
+
+.serverItem:hover > .removeServer {
+  display : inline-block;
+}
+
+.noServers {
+  color     : #ccc;
+  font-size : 2em;
+  padding   : 20%;
+}
+
 .dijitIcon {
   width  : 22px;
   height : 22px;
@@ -368,7 +452,13 @@ html, body, #mainContainer {
 }
 
 .rootFolder {
-  font-style : italic !important;
+  font-style  : italic !important;
+  font-weight : bolder !important;
+}
+
+.treeIcon {
+  width  : 16px;
+  height : 16px;
 }
 
 .folderItem {
@@ -532,6 +622,70 @@ html, body, #mainContainer {
   background : url(./images/ItemInformation16.png) no-repeat 4px;
 }
 
+.iconMapServer, .iconFeatureServer {
+  background : url(./images/ServiceNetwork16.png) no-repeat 4px;
+}
+
+.iconGPServer {
+  background : url(./images/ServiceGeoprocessing16.png) no-repeat 4px;
+}
+
+.iconImageServer {
+  background : url(./images/ServiceImage16.png) no-repeat 4px;
+}
+
+.iconNAServer {
+  background : url(./images/ServiceNA16.png) no-repeat 4px;
+}
+
+.iconGlobeServer {
+  background : url(./images/ServiceGlobe16.png) no-repeat 4px;
+}
+
+.iconGeodataServer {
+  background : url(./images/ServiceGeodata16.png) no-repeat 4px;
+}
+
+.iconGeocodeServer {
+  background : url(./images/ServiceGeocoding16.png) no-repeat 4px;
+}
+
+.iconGeometryServer {
+  background : url(./images/ServiceGeometry16.png) no-repeat 4px;
+}
+
+.iconMobileServer {
+  background : url(./images/ServiceMobile16.png) no-repeat 4px;
+}
+
+.error {
+  color : red;
+}
+
+.getServerFoldersIcon {
+  background : url(./images/ServerArcGIS16.png) no-repeat 4px;
+}
+
+.saveServerIcon {
+  background : url(./images/ServerGenericAdd16.png) no-repeat 4px;
+}
+
+.loadServerIcon {
+  background : url(./images/ServersFolder16.png) no-repeat 4px;
+}
+
+.registerServicesIcon {
+  background : url(./images/FolderWithGISDataAdd16.png) no-repeat 4px;
+}
+
+.dijitDisabled .registerServicesIcon {
+  background : url(./images/FolderWithGISDataAdd16Disabled.png) no-repeat 4px;
+}
+
+.commonPropsIcon {
+  background : url(./images/ItemInformation16.png) no-repeat 4px;
+}
+
 .dgrid {
   width   : 100% !important;
   height  : 100% !important;
@@ -617,7 +771,6 @@ html, body, #mainContainer {
   border        : none !important;
   background    : #555 none !important;
   box-shadow    : inset 0 0 5px silver;
-  border        : none !important;
   border-radius : 4px 4px 0 0;
 }
 
@@ -707,6 +860,24 @@ html, body, #mainContainer {
 
 .access-private {
   color : #999;
+}
+
+.panelItem {
+  height  : 30px;
+  padding : 0 35px 0 35px;
+}
+
+.portalUrlNode {
+  cursor  : pointer;
+  width   : 350px;
+  margin  : 2px;
+  padding : 4px;
+}
+
+.portalUrlNode:hover {
+  color            : #eee;
+  text-shadow      : 1px 1px 3px #111;
+  background-color : #444;
 }
 
 
