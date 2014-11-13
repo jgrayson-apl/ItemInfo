@@ -78,10 +78,7 @@ require([
   var arcGISOnlineUtils = null;
 
   var portalUrlList = [
-    document.location.protocol + "//www.arcgis.com"/*,
-     document.location.protocol + "//portalhost.esri.com/gis",
-     document.location.protocol + "//portalhostqa.esri.com/gis",
-     document.location.protocol + "//portalhostds.esri.com/gis"*/
+    document.location.protocol + "//www.arcgis.com"
   ];
 
   ready(function () {
@@ -107,6 +104,7 @@ require([
           store: new Observable(new Memory({
             data: []
           })),
+          sort: "id",
           loadingMessage: "Loading folders...",
           noDataMessage: "Server Folders",
           selectionMode: "single",
@@ -120,6 +118,7 @@ require([
           store: new Observable(new Memory({
             data: []
           })),
+          sort: "id",
           columns: getServicesColumns(),
           selectionMode: "extended",
           loadingMessage: "Loading services...",
@@ -155,6 +154,7 @@ require([
           store: new Observable(new Memory({
             data: []
           })),
+          sort: "id",
           loadingMessage: "Loading folders...",
           noDataMessage: "User Folders",
           selectionMode: "single",
@@ -169,6 +169,7 @@ require([
           store: new Observable(new Memory({
             data: []
           })),
+          sort: "id",
           loadingMessage: "Loading groups...",
           noDataMessage: "User Groups",
           selectionMode: "single",
@@ -183,6 +184,7 @@ require([
           store: new Observable(new Memory({
             data: []
           })),
+          sort: "id",
           loadingMessage: "Loading tags...",
           noDataMessage: "User Tags",
           selectionMode: "single",
@@ -197,6 +199,7 @@ require([
           store: new Observable(new Memory({
             data: []
           })),
+          sort: "id",
           columns: getColumns(),
           loadingMessage: "Loading items...",
           noDataMessage: "No items found"
@@ -250,9 +253,9 @@ require([
         connect.connect(registry.byId('optionsContainer'), 'selectChild', lang.hitch(this, function (selectedChild) {
 
           var itemsSource = registry.byId('sourceListsContainer').selectedChildWidget;
-          var checked = ((selectedChild.title === "Tag Editor") && ((itemsSource.title === "Groups") || (itemsSource.title === "Search")));
-          registry.byId('userOwnedChk').set('checked', checked && (portalUser.role !== "org_admin"));
-          registry.byId('userOwnedChk').set('disabled', checked && (portalUser.role !== "org_admin"));
+          //var checked = ((selectedChild.title === "Tag Editor") && ((itemsSource.title === "Groups") || (itemsSource.title === "Search")));
+          //registry.byId('userOwnedChk').set('checked', checked && (portalUser.role !== "org_admin"));
+          //registry.byId('userOwnedChk').set('disabled', checked && (portalUser.role !== "org_admin"));
 
           sourceItemList.refresh();
           if(tagItemList) {
@@ -332,7 +335,7 @@ require([
 
         // SIGN IN //
         portal.signIn().then(lang.hitch(this, function (loggedInUser) {
-
+          // PORTAL USER //
           portalUser = loggedInUser;
           arcGISOnlineUtils = new ArcGISOnlineUtils({portalUser: portalUser});
 
@@ -369,18 +372,35 @@ require([
             sourceGroupsList.set('store', groupStore);
           });
 
-          // GET USER TAGS //
-          portalUser.getTags().then(function (tagItems) {
-            var tagStore = new Observable(new Memory({
-              data: array.map(tagItems, function (tagItem) {
-                return {id: tagItem.tag, tag: tagItem.tag};
-              })
+          if(portalUser.role === "org_admin") {
+            // GET ORG TAGS //
+            getOrgTags().then(lang.hitch(this, function (tagItems) {
+              var tagStore = new Observable(new Memory({
+                data: array.map(tagItems, function (tagItem) {
+                  return {id: tagItem, tag: tagItem};
+                })
+              }));
+              // SET LISTS STORE //
+              sourceTagsList.set('store', tagStore);
+            }), lang.hitch(this, function (error) {
+              console.warn(error);
             }));
-            // SET LISTS STORE //
-            sourceTagsList.set('store', tagStore);
-          });
 
+          } else {
 
+            // GET USER TAGS //
+            portalUser.getTags().then(function (tagItems) {
+              var tagStore = new Observable(new Memory({
+                data: array.map(tagItems, function (tagItem) {
+                  return {id: tagItem.tag, tag: tagItem.tag};
+                })
+              }));
+              // SET LISTS STORE //
+              sourceTagsList.set('store', tagStore);
+            });
+          }
+
+          // SEARCH PARAMETERS //
           buildSearchParameterUI();
 
         }), lang.hitch(this, function (error) {
@@ -1679,8 +1699,15 @@ require([
         getTagItemsDeferred.cancel();
       }
 
+      var queryStrings = [lang.replace('tags:"{0}"', [userTag.tag])];
+      if(portalUser.role === "org_admin") {
+        queryStrings.push(lang.replace('orgid:{0}', [portalUser.portal.id]));
+      } else {
+        queryStrings.push(lang.replace('owner:{0}', [portalUser.username]));
+      }
+
       var queryParams = {
-        q: lang.replace('tags:"{0}" AND owner:{1}', [userTag.tag, portalUser.username]),
+        q: queryStrings.join(" AND "),
         sortField: 'title',
         sortOrder: 'asc',
         start: 0,
@@ -1754,6 +1781,41 @@ require([
         }
       }));
 
+      return deferred.promise;
+    }
+
+
+    function getOrgTags() {
+      var deferred = new Deferred();
+
+      portalUser.portal.queryUsers({
+        q: lang.replace('orgid:{0}', [portalUser.portal.id])
+      }).then(function (users) {
+        //console.log(users);
+
+        var orgTagsRequests = array.map(users.results, lang.hitch(this, function (orgUser) {
+          return orgUser.getTags().then(function (tagItems) {
+            return array.map(tagItems, function (tagItem) {
+              return tagItem.tag;
+            });
+          });
+        }));
+
+        all(orgTagsRequests).then(lang.hitch(this, function (orgTagsResponses) {
+          var allOrgTags = [];
+          array.forEach(orgTagsResponses, lang.hitch(this, function (orgTagsResponse) {
+            array.forEach(orgTagsResponse, lang.hitch(this, function (orgTag) {
+              if(array.indexOf(allOrgTags, orgTag) === -1) {
+                allOrgTags.push(orgTag);
+              }
+            }));
+          }));
+          deferred.resolve(allOrgTags)
+        }), lang.hitch(this, function (error) {
+          console.warn(error);
+        }));
+
+      });
       return deferred.promise;
     }
 
@@ -1878,6 +1940,7 @@ require([
       if(!countsItemList) {
         countsItemList = new declare([OnDemandGrid, DijitRegistry])({
           store: null,
+          sort: "id",
           columns: [
             {
               label: "Title",
@@ -2009,6 +2072,7 @@ require([
       if(!tagItemList) {
         tagItemList = new declare([OnDemandGrid, Selection, DijitRegistry])({
           store: null,
+          sort: "id",
           selectionMode: "extended",
           columns: [
             {
@@ -2034,6 +2098,7 @@ require([
 
       if(!tagsList) {
         tagsList = new declare([OnDemandList, Selection, DijitRegistry])({
+          sort: "id",
           selectionMode: "single",
           renderRow: renderTagRow,
           loadingMessage: "Loading tags...",

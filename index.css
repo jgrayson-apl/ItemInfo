@@ -7,6 +7,18 @@ html, body, #mainContainer {
   background-color : silver;
 }
 
+:focus {
+  outline : none;
+}
+
+.claro .dijitSplitContainer-child, .claro .dijitBorderContainer-child {
+  border : none;
+}
+
+.claro .dijitSplitContainer-dijitContentPane, .claro .dijitBorderContainer-dijitContentPane {
+  background-color : #333;
+}
+
 .dijitSplitterVHover {
   background-image : -moz-linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
   background-image : -webkit-linear-gradient(top, silver 0px, rgba(255, 255, 255, 0) 50%, silver 100%) !important;
