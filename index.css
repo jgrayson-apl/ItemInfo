@@ -366,6 +366,28 @@ html, body, #mainContainer {
   width : 200px;
 }
 
+.field-owner {
+  text-align    : right;
+  width         : 140px;
+  padding-right : 10px;
+}
+
+.field-owner[role="columnheader"] {
+  text-align : left !important;
+}
+
+.field-id {
+  width : 300px;
+}
+
+.field-access {
+  width : 100px;
+}
+
+.field-type {
+  width : 250px;
+}
+
 .serverAction {
   color       : #555;
   font-weight : bolder;
@@ -602,8 +624,6 @@ html, body, #mainContainer {
 .iconItem {
   padding-left : 24px !important;
 }
-
-
 
 .iconFileGeodatabase {
   background : url(./images/Geodatabase16.png) no-repeat 4px;

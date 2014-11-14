@@ -1352,6 +1352,7 @@ require([
         needsQuotes: true,
         label: "Tags",
         field: "tags",
+        canSort: false,
         hidden: false
       });
       columns.push({
@@ -1719,11 +1720,11 @@ require([
         getTagItemsDeferred.cancel();
       }
 
-      var queryStrings = [lang.replace('tags:"{0}"', [userTag.tag])];
+      var queryStrings = [lang.replace('tags:"{tag}"', userTag)];
       if(portalUser.role === "org_admin") {
-        queryStrings.push(lang.replace('orgid:{0}', [portalUser.portal.id]));
+        queryStrings.push(lang.replace('orgid:{portal.id}', portalUser));
       } else {
-        queryStrings.push(lang.replace('owner:{0}', [portalUser.username]));
+        queryStrings.push(lang.replace('owner:{username}', portalUser));
       }
 
       var queryParams = {
@@ -1805,6 +1806,10 @@ require([
     }
 
 
+    /**
+     *
+     * @returns {Deferred.promise}
+     */
     function getOrgTags() {
       var deferred = new Deferred();
 
@@ -2039,38 +2044,38 @@ require([
 
     // SYNC SEARCH AND ITEM COUNTS BY //
     // CALLING 'UPDATE' ON ALL ITEMS  //
-    function syncItemCounts() {
+    /*function syncItemCounts() {
 
-      var results = countsItemList.store.query(countsItemList.query, {sort: countsItemList._getSort()});
-      if(results.length > 0) {
-        if(confirm("Synchronizing the search and item counts requires an 'update' call to EVERY item in the list.\nContinue?")) {
+     var results = countsItemList.store.query(countsItemList.query, {sort: countsItemList._getSort()});
+     if(results.length > 0) {
+     if(confirm("Synchronizing the search and item counts requires an 'update' call to EVERY item in the list.\nContinue?")) {
 
-          array.forEach(results, lang.hitch(this, function (item) {
-            //if(item.countDiff && (item.countDiff < 1.0)) {
-            portalUser.getItem(item.id).then(lang.hitch(this, function (userItem) {
-              esriRequest({
-                url: lang.replace("{userItemUrl}/update", userItem),
-                content: {
-                  f: 'json',
-                  token: portalUser.credential.token
-                }
-              }, {
-                usePost: true
-              }).then(lang.hitch(this, function (response) {
-                if(response.success) {
-                  userItem.itemCount = userItem.numViews;
-                  //userItem.countDiff = 1.0;
-                  userItem.countDiff = (item.numViews / userItem.numViews);
-                  countsItemList.store.put(userItem);
-                  sourceItemList.store.put(userItem);
-                }
-              }));
-            }));
-            //}
-          }));
-        }
-      }
-    }
+     array.forEach(results, lang.hitch(this, function (item) {
+     //if(item.countDiff && (item.countDiff < 1.0)) {
+     portalUser.getItem(item.id).then(lang.hitch(this, function (userItem) {
+     esriRequest({
+     url: lang.replace("{userItemUrl}/update", userItem),
+     content: {
+     f: 'json',
+     token: portalUser.credential.token
+     }
+     }, {
+     usePost: true
+     }).then(lang.hitch(this, function (response) {
+     if(response.success) {
+     userItem.itemCount = userItem.numViews;
+     //userItem.countDiff = 1.0;
+     userItem.countDiff = (item.numViews / userItem.numViews);
+     countsItemList.store.put(userItem);
+     sourceItemList.store.put(userItem);
+     }
+     }));
+     }));
+     //}
+     }));
+     }
+     }
+     }*/
 
     // DISPLAY TAG EDITOR //
     function updateTagEditor(allResults) {
@@ -2090,21 +2095,30 @@ require([
       }));
 
       if(!tagItemList) {
+
+        var tagItemColumns = [
+          {
+            label: "Title",
+            field: "title",
+            renderCell: renderItemTitle
+          },
+          {
+            label: "Tags",
+            field: "tags"
+          }
+        ];
+        if(portalUser.role === "org_admin") {
+          tagItemColumns.push({
+            label: "Owner",
+            field: "owner"
+          });
+        }
+
         tagItemList = new declare([OnDemandGrid, Selection, DijitRegistry])({
           store: null,
           sort: "id",
           selectionMode: "extended",
-          columns: [
-            {
-              label: "Title",
-              field: "title",
-              renderCell: renderItemTitle
-            },
-            {
-              label: "Tags",
-              field: "tags"
-            }
-          ],
+          columns: tagItemColumns,
           loadingMessage: "Loading items...",
           noDataMessage: "No items found"
         }, "tagItemListPane");
