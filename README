@@ -1,3 +1,12 @@
-Inspect ArcGIS.com items in your folders and groups.
+
+
+Concept:  
+  Provide a ‘Tag Editor’ for an ArcGIS Online Organization.
+
+Workflow: 
+  1)	Select items based on folder, tags, group, or search.
+  2)	Filter based on item title and type.
+  3)	Use ‘Tag Editor’ to Add, Replace, or Remove multiple tags from multiple items.
+
 
 Check it out live here: http://maps.esri.com/AGSJS_Demos/templates/ItemInfo/index.html
