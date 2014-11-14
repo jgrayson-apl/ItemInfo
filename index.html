@@ -107,7 +107,7 @@
               <label for="useFieldNamesChk" style="font-style:italic;font-size:smaller;">Use Field Names:&nbsp;</label>
               <input id="useFieldNamesChk" data-dojo-type="dijit/form/CheckBox"/>
             </div>
-            <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center',style:{overflow:'auto',border:'solid 1px silver'}">
+            <div id="csvTextPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
               <label for="csvTextArea"></label>
               <textarea id="csvTextArea" data-dojo-type="dijit/form/Textarea" style="width:100%;"></textarea>
             </div>
@@ -137,9 +137,7 @@
               </div>
             </div>
           </div>
-
           <div id="registerServicesPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Register Services',iconClass:'registerServicesIcon',gutters:false">
-
             <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'left',gutters:false,splitter:true,style:{width:'500px'}">
               <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
                 <table width="100%" height="100%" border="0">
@@ -188,7 +186,6 @@
                 <div id="rs_serverFoldersPane"></div>
               </div>
             </div>
-
             <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
               <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller',float:'right'}">
                 <div id="rs_selectAllBtn" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'selectAllIcon',label:'Select All',title:'Select all items'"></div>
@@ -229,28 +226,26 @@
                     </table>
                   </div>
                 </div>
-          <span style="float:right;">
-            <span data-dojo-type="dijit/ToolbarSeparator"></span>
-            <div id="registerServicesBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'registerServicesIcon',label:'Register Services',title:'Register Selected Services'"></div>
-            <input id="registerSubLayersChk" data-dojo-type="dijit/form/CheckBox"/>
-            <label for="registerSubLayersChk" style="vertical-align:middle;">Register Sub-Layers</label>
-            <input id="shareToPublicChk" data-dojo-type="dijit/form/CheckBox"/>
-            <label for="shareToPublicChk" style="vertical-align:middle;">Share with Everyone</label>
-          </span>
+                <span style="float:right;">
+                  <span data-dojo-type="dijit/ToolbarSeparator"></span>
+                  <div id="registerServicesBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'registerServicesIcon',label:'Register Services',title:'Register Selected Services'"></div>
+                  <input id="registerSubLayersChk" data-dojo-type="dijit/form/CheckBox"/>
+                  <label for="registerSubLayersChk" style="vertical-align:middle;">Register Sub-Layers</label>
+                  <input id="shareToPublicChk" data-dojo-type="dijit/form/CheckBox"/>
+                  <label for="shareToPublicChk" style="vertical-align:middle;">Share with Everyone</label>
+                </span>
               </div>
               <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
                 <div id="rs_serverServicesPane"></div>
               </div>
             </div>
           </div>
-
           <!-- <div id="shareItemsPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Share Items',iconClass:'shareItemsIcon',gutters:false">
              <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left',style:{width:'30%'}">
                <div id="shareTargetFolder"></div>
              </div>
              <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
            </div>-->
-
           <!--
           <div id="syncCountsPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Counts',iconClass:'countsIcon',gutters:false">
             <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
@@ -263,7 +258,6 @@
             </div>
           </div>
           -->
-
         </div>
         <div class="panelInfo" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
           The list of items based on the folder, tag, group, or search.
