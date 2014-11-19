@@ -180,7 +180,7 @@ require([
           store: new Observable(new Memory({
             data: []
           })),
-          sort: "id",
+          sort: "title",
           loadingMessage: "Loading folders...",
           noDataMessage: "User Folders",
           selectionMode: "single",
@@ -278,7 +278,7 @@ require([
         // OPTIONS STACK CONTAINER CHILD SELECTED //
         connect.connect(registry.byId('optionsContainer'), 'selectChild', lang.hitch(this, function (selectedChild) {
 
-          var itemsSource = registry.byId('sourceListsContainer').selectedChildWidget;
+          ////var itemsSource = registry.byId('sourceListsContainer').selectedChildWidget;
           //var checked = ((selectedChild.title === "Tag Editor") && ((itemsSource.title === "Groups") || (itemsSource.title === "Search")));
           //registry.byId('userOwnedChk').set('checked', checked && (portalUser.role !== "org_admin"));
           //registry.byId('userOwnedChk').set('disabled', checked && (portalUser.role !== "org_admin"));
@@ -291,41 +291,41 @@ require([
             tagsList.clearSelection();
           }
 
-          var disableSourceSelection = false;
+          /*var disableSourceSelection = false;
 
-          switch (selectedChild.title) {
-            case "Details":
-              break;
-            case "Gallery":
-              break;
-            case "CSV":
-              break;
-            case "Tag Editor":
-              disableSourceSelection = true;
-              break;
-            case "Register Services":
-              disableSourceSelection = true;
-              break;
-          }
+           switch (selectedChild.title) {
+           case "Details":
+           break;
+           case "Gallery":
+           break;
+           case "CSV":
+           break;
+           case "Tag Editor":
+           disableSourceSelection = true;
+           break;
+           case "Register Services":
+           disableSourceSelection = true;
+           break;
+           }
 
-          //sourceFoldersList.set('selectionMode', disableSourceSelection ? "none" : "single");
-          //sourceGroupsList.set('selectionMode', disableSourceSelection ? "none" : "single");
-          //sourceTagsList.set('selectionMode', disableSourceSelection ? "none" : "single");
+           //sourceFoldersList.set('selectionMode', disableSourceSelection ? "none" : "single");
+           //sourceGroupsList.set('selectionMode', disableSourceSelection ? "none" : "single");
+           //sourceTagsList.set('selectionMode', disableSourceSelection ? "none" : "single");
 
-          query("#sourceListController .dijitToggleButton").forEach(lang.hitch(this, function (node) {
-            var toggleButton = registry.byNode(node);
-            if(toggleButton) {
-              toggleButton.set('disabled', disableSourceSelection);
-            }
-          }));
+           query("#sourceListController .dijitToggleButton").forEach(lang.hitch(this, function (node) {
+           var toggleButton = registry.byNode(node);
+           if(toggleButton) {
+           toggleButton.set('disabled', disableSourceSelection);
+           }
+           }));
 
-          query("#sourceListsContainer .dgrid-row").forEach(lang.hitch(this, function (node) {
-            if(disableSourceSelection) {
-              domClass.add(node, 'paneDisabled');
-            } else {
-              domClass.remove(node, 'paneDisabled');
-            }
-          }));
+           query("#sourceListsContainer .dgrid-row").forEach(lang.hitch(this, function (node) {
+           if(disableSourceSelection) {
+           domClass.add(node, 'paneDisabled');
+           } else {
+           domClass.remove(node, 'paneDisabled');
+           }
+           }));*/
 
         }));
 
@@ -372,7 +372,7 @@ require([
             // ROOT FOLDER //
             var rootFolder = {
               id: '',
-              title: portalUser.username,
+              title: lang.replace(" {username} (Home)", portalUser),
               isRoot: true
             };
             // FOLDER STORE //
@@ -581,16 +581,6 @@ require([
             }
           }
         }));
-
-        /*
-         apl4 @ maps.esri.com - http://maps.esri.com/apl4/rest/services
-         arcgis @ gis.maricopa.gov - http://gis.maricopa.gov/arcgis/rest/services
-         arcgis @ gis.arlingtonva.us - http://gis.arlingtonva.us/arcgis/rest/services
-         arcgis @ gis.ci.waco.tx.us - http://gis.ci.waco.tx.us/arcgis/rest/services
-         arcgis @ www.wijkscan.com - http://www.wijkscan.com/arcgis/rest/services
-         apl16 @ maps.esri.com - http://maps.esri.com/apl16/rest/services
-         */
-
 
       }
     }
