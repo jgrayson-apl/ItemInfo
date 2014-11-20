@@ -345,7 +345,7 @@ html, body, #mainContainer {
 .actionMessageNode {
   float          : left;
   vertical-align : middle;
-  color          : gray;
+  color          : #666;
   font-style     : italic;
   font-size      : smaller;
 }
@@ -835,22 +835,25 @@ html, body, #mainContainer {
 }
 
 .tag-list-node:hover {
-  color            : #eee;
-  background-color : #666;
+  color            : #eee !important;
+  background-color : #666 !important;
+}
+
+.tag-list-node:hover > .tag-list-clear {
+  display : inline;
 }
 
 .tag-list-item {
-  cursor : pointer;
+  padding-left : 24px;
+  cursor       : pointer;
 }
 
 .tag-list-clear {
-  float: right;
-  cursor   : pointer;
-}
-
-.tag-list-clear:hover {
-  color       : red;
-  font-weight : bolder;
+  width   : 32px;
+  height  : 24px;
+  float   : right;
+  cursor  : pointer;
+  display : none;
 }
 
 .dgrid-selected {

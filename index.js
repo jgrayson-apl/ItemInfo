@@ -1796,24 +1796,71 @@ require([
       return deferred.promise;
     }
 
+    /**
+     * RECURSIVELY SEARCH UNTIL ALL RESULTS ARE RETURNED
+     * NOTE: THIS CALL CAN BE DANGEROUS IF THE QUERY RESULTS
+     * IN A VERY LARGE NUMBER OF RESULTS. USE CAUTIOUSLY!
+     *
+     * @param nextQueryParams
+     * @param allUsers
+     * @returns {Deferred.promise}
+     */
+    /*function getPortalUsers(nextQueryParams, allUsers) {
+     var deferred = new Deferred();
+
+     if(!allUsers) {
+     allUsers = [];
+     }
+
+     var queryParameters = nextQueryParams || {f: 'json', num: 10000};
+
+     esriRequest({
+     url: lang.replace('{portalUrl}portals/{id}}/users', portalUser.portal),
+     content: queryParameters
+     }).then(lang.hitch(this, function (response) {
+     allUsers = allUsers.concat(response.users);
+     if(response.nextStart > -1) {
+     queryParameters.start = response.nextStart;
+     getPortalUsers(queryParameters, allUsers).then(deferred.resolve, deferred.reject);
+     } else {
+     deferred.resolve(allUsers);
+     }
+     }), lang.hitch(this, function (error) {
+     deferred.reject(error);
+     }));
+
+     return deferred.promise;
+     }
+     */
 
     /**
      *
      * @returns {Deferred.promise}
      */
-    function getOrgTags() {
+    function getOrgTags(nextQueryParams, allOrgTags, updateDialog) {
       var deferred = new Deferred();
 
-      // TODO:                                                                //
-      //       USE getPortalUsers TO RECURSIVELY ASK FOR ALL USERS IN AN ORG  //
-      //       WHICH MEANS WE ALSO NEED TO IMPLEMENT portalUser.getTags()...  //
-      //                                                                      //
-      //getPortalUsers().then(lang.hitch(this, function (users) {             //
+      if(!allOrgTags) {
+        allOrgTags = [];
+      }
 
-      portalUser.portal.queryUsers({q: lang.replace('orgid:{0}', [portalUser.portal.id])}).then(lang.hitch(this, function (users) {
-        console.log(users);
+      /*
+      if(!updateDialog) {
+        updateDialog = new Dialog({
+          className: "esriSignInDialog",
+          title: "Find All Organization Tags",
+          content: "Finding all Org tags: 0"
+        });
+        updateDialog.show();
+      }
+      */
 
-        var orgTagsRequests = array.map(users.results, lang.hitch(this, function (orgUser) {
+
+      var queryParameters = nextQueryParams || {q: lang.replace('orgid:{0}', [portalUser.portal.id]), num: 100};
+
+      portalUser.portal.queryUsers(queryParameters).then(lang.hitch(this, function (response) {
+
+        var orgTagsRequests = array.map(response.results, lang.hitch(this, function (orgUser) {
           return orgUser.getTags().then(function (tagItems) {
             return array.map(tagItems, function (tagItem) {
               return tagItem.tag;
@@ -1822,16 +1869,22 @@ require([
         }));
 
         all(orgTagsRequests).then(lang.hitch(this, function (orgTagsResponses) {
-          var allOrgTags = [];
           array.forEach(orgTagsResponses, lang.hitch(this, function (orgTagsResponse) {
             array.forEach(orgTagsResponse, lang.hitch(this, function (orgTag) {
               if(array.indexOf(allOrgTags, orgTag) === -1) {
                 allOrgTags.push(orgTag);
+                //updateDialog.set("content", "Finding all Org tags: " + allOrgTags.length);
               }
             }));
           }));
 
-          deferred.resolve(allOrgTags)
+          if(response.nextQueryParams.start > 0) {
+            getOrgTags(response.nextQueryParams, allOrgTags, updateDialog).then(deferred.resolve, deferred.reject);
+          } else {
+            //updateDialog.hide();
+            deferred.resolve(allOrgTags);
+          }
+
         }), lang.hitch(this, function (error) {
           console.warn(error);
         }));
@@ -2178,8 +2231,8 @@ require([
 
       var tagsListPane = put(contentAreaNode, "div.tags-list-pane");
       array.forEach(item.tags, lang.hitch(this, function (tag) {
-        var tagItemNode = put(tagsListPane, "div.tag-list-node");
-        var clearTagNode = put(tagItemNode, "span.tag-list-clear", {innerHTML: "X", title: "Remove Tag"});
+        var tagItemNode = put(tagsListPane, "div.tag-list-node.tagItem");
+        var clearTagNode = put(tagItemNode, "span.tag-list-clear.removeTagIcon", {title: "Remove Tag"});
         var tagNode = put(tagItemNode, "div.tag-list-item", tag);
         on(tagNode, "click", lang.hitch(this, function (evt) {
           var oldTag = tagNode.innerHTML;
@@ -2561,42 +2614,6 @@ require([
       return deferred.promise;
     }
 
-
-    /**
-     * RECURSIVELY SEARCH UNTIL ALL RESULTS ARE RETURNED
-     * NOTE: THIS CALL CAN BE DANGEROUS IF THE QUERY RESULTS
-     * IN A VERY LARGE NUMBER OF RESULTS. USE CAUTIOUSLY!
-     *
-     * @param nextQueryParams
-     * @param allUsers
-     * @returns {Deferred.promise}
-     */
-    function getPortalUsers(nextQueryParams, allUsers) {
-      var deferred = new Deferred();
-
-      if(!allUsers) {
-        allUsers = [];
-      }
-
-      var queryParameters = nextQueryParams || {f: 'json', num: 10000};
-
-      esriRequest({
-        url: lang.replace('{portalUrl}portals/{id}}/users', portalUser.portal),
-        content: queryParameters
-      }).then(lang.hitch(this, function (response) {
-        allUsers = allUsers.concat(response.users);
-        if(response.nextStart > -1) {
-          queryParameters.start = response.nextStart;
-          getPortalUsers(queryParameters, allUsers).then(deferred.resolve, deferred.reject);
-        } else {
-          deferred.resolve(allUsers);
-        }
-      }), lang.hitch(this, function (error) {
-        deferred.reject(error);
-      }));
-
-      return deferred.promise;
-    }
 
   });
 });
