@@ -1804,12 +1804,14 @@ require([
     function getOrgTags() {
       var deferred = new Deferred();
 
-      // TODO: USE getPortalUsers INSTEAD...
+      // TODO:                                                                //
+      //       USE getPortalUsers TO RECURSIVELY ASK FOR ALL USERS IN AN ORG  //
+      //       WHICH MEANS WE ALSO NEED TO IMPLEMENT portalUser.getTags()...  //
+      //                                                                      //
+      //getPortalUsers().then(lang.hitch(this, function (users) {             //
 
-      portalUser.portal.queryUsers({
-        q: lang.replace('orgid:{0}', [portalUser.portal.id])
-      }).then(function (users) {
-        //console.log(users);
+      portalUser.portal.queryUsers({q: lang.replace('orgid:{0}', [portalUser.portal.id])}).then(lang.hitch(this, function (users) {
+        console.log(users);
 
         var orgTagsRequests = array.map(users.results, lang.hitch(this, function (orgUser) {
           return orgUser.getTags().then(function (tagItems) {
@@ -1828,12 +1830,14 @@ require([
               }
             }));
           }));
+
           deferred.resolve(allOrgTags)
         }), lang.hitch(this, function (error) {
           console.warn(error);
         }));
 
-      });
+      }));
+
       return deferred.promise;
     }
 
@@ -2109,7 +2113,7 @@ require([
 
         tagItemList = new declare([OnDemandGrid, Selection, DijitRegistry])({
           store: null,
-          sort: "id",
+          sort: "title",
           selectionMode: "extended",
           columns: tagItemColumns,
           loadingMessage: "Loading items...",
@@ -2223,7 +2227,7 @@ require([
                 tagsList.store.remove(removedTag);
               }
             }
-             // TODO: ONLY REMOVE IF NOT USED BY ANY OTHER ITEMS...
+            // TODO: ONLY REMOVE IF NOT USED BY ANY OTHER ITEMS...
             if(sourceTagsList.store.get(removedTag)) {
               sourceTagsList.store.remove(removedTag);
             }
@@ -2574,10 +2578,7 @@ require([
         allUsers = [];
       }
 
-      var queryParameters = nextQueryParams || {
-            f: 'json',
-            num: 10000
-          };
+      var queryParameters = nextQueryParams || {f: 'json', num: 10000};
 
       esriRequest({
         url: lang.replace('{portalUrl}portals/{id}}/users', portalUser.portal),

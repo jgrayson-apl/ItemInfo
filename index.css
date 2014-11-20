@@ -749,12 +749,6 @@ html, body, #mainContainer {
   background : url(./images/ItemInformation16.png) no-repeat 4px;
 }
 
-.dialogContentPane {
-  min-width  : 500px;
-  min-height : 100px;
-  max-height : 600px;
-}
-
 .dgrid {
   width   : 100% !important;
   height  : 100% !important;
@@ -821,15 +815,22 @@ html, body, #mainContainer {
   background-position : right;
 }
 
+.dialogContentPane {
+  min-width  : 500px;
+  min-height : 100px;
+  max-height : 600px;
+  overflow   : auto;
+}
+
 .tags-list-pane {
   margin           : 5px 10px 5px 10px;
   color            : #444;
   background-color : #fff;
-  border : solid 1px #ddd;
+  border           : solid 1px #ddd;
 }
 
 .tag-list-node {
-  padding       : 5px;
+  padding    : 5px;
   border-top : solid 1px #ddd;
 }
 
@@ -843,8 +844,7 @@ html, body, #mainContainer {
 }
 
 .tag-list-clear {
-  position : absolute;
-  right    : 25px;
+  float: right;
   cursor   : pointer;
 }
 
