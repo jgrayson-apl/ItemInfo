@@ -336,6 +336,12 @@ html, body, #mainContainer {
   width : 100%;
 }
 
+.tagListEditorDialogContentArea {
+  width  : 450px;
+  height : 50px;
+  margin : 20px;
+}
+
 .actionMessageNode {
   float          : left;
   vertical-align : middle;
@@ -501,7 +507,7 @@ html, body, #mainContainer {
 }
 
 .rootFolder {
-  font-style  : italic !important;
+  font-style : italic !important;
   /*font-weight : bolder !important;*/
 }
 
@@ -743,6 +749,12 @@ html, body, #mainContainer {
   background : url(./images/ItemInformation16.png) no-repeat 4px;
 }
 
+.dialogContentPane {
+  min-width  : 500px;
+  min-height : 100px;
+  max-height : 600px;
+}
+
 .dgrid {
   width   : 100% !important;
   height  : 100% !important;
@@ -807,6 +819,38 @@ html, body, #mainContainer {
 
 #tagListPane .removeNode .dgrid-selected {
   background-position : right;
+}
+
+.tags-list-pane {
+  margin           : 5px 10px 5px 10px;
+  color            : #444;
+  background-color : #fff;
+  border : solid 1px #ddd;
+}
+
+.tag-list-node {
+  padding       : 5px;
+  border-top : solid 1px #ddd;
+}
+
+.tag-list-node:hover {
+  color            : #eee;
+  background-color : #666;
+}
+
+.tag-list-item {
+  cursor : pointer;
+}
+
+.tag-list-clear {
+  position : absolute;
+  right    : 25px;
+  cursor   : pointer;
+}
+
+.tag-list-clear:hover {
+  color       : red;
+  font-weight : bolder;
 }
 
 .dgrid-selected {
