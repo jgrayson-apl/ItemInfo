@@ -1845,15 +1845,15 @@ require([
       }
 
       /*
-      if(!updateDialog) {
-        updateDialog = new Dialog({
-          className: "esriSignInDialog",
-          title: "Find All Organization Tags",
-          content: "Finding all Org tags: 0"
-        });
-        updateDialog.show();
-      }
-      */
+       if(!updateDialog) {
+       updateDialog = new Dialog({
+       className: "esriSignInDialog",
+       title: "Find All Organization Tags",
+       content: "Finding all Org tags: 0"
+       });
+       updateDialog.show();
+       }
+       */
 
 
       var queryParameters = nextQueryParams || {q: lang.replace('orgid:{0}', [portalUser.portal.id]), num: 100};
@@ -2175,7 +2175,7 @@ require([
         tagItemList.startup();
         tagItemList.on("dgrid-select", lang.hitch(this, tagItemSelected));
         tagItemList.on("dgrid-deselect", lang.hitch(this, tagItemSelected));
-        tagItemList.on(".dgrid-row:dblclick", lang.hitch(this, editTagItem));
+        tagItemList.on(".dgrid-row:dblclick", lang.hitch(this, editItemTags));
       }
       var itemStore = new Observable(new Memory({data: allResults}));
       tagItemList.set('store', itemStore);
@@ -2211,53 +2211,109 @@ require([
 
     }
 
-    function editTagItem(evt) {
+
+    /**
+     *
+     * @param evt
+     */
+    function editItemTags(evt) {
       var row = tagItemList.row(evt);
       var item = row.data;
 
-      var removedTags = [];
+      // LISTS OF TAGS TO ADD OR REMOVE //
       var addedTags = [];
+      var removedTags = [];
 
+      // REMOVE ANY PREVIOUS TAG NODES //
       query(".tag-list-item").forEach(domConstruct.destroy);
 
+      // DIALOG //
       var editTagsDialog = new Dialog({
         className: "esriSignInDialog",
+        iconClass: "tagEditorIcon",
         title: "Edit Item Tags",
         closable: false
       });
 
+
+      // ON TAG ITEM CLICK //
+      var onTagClick = lang.hitch(this, function (tagNode) {
+        var oldTag = tagNode.innerHTML;
+        getNewTag(oldTag).then(lang.hitch(this, function (newTags) {
+          var newTag = lang.trim(newTags[0]);
+          tagNode.innerHTML = newTag;
+          removedTags.push(oldTag);
+          addedTags.push(newTag);
+          okBtn.set("disabled", false);
+        }), lang.hitch(this, function (error) {
+          console.warn(error);
+        }));
+      });
+
+      // ON TAG ITEM CLEAR CLICK //
+      var onClearClick = lang.hitch(this, function (tagItemNode, tagNode) {
+        put(tagItemNode, "!");
+        var removedTag = tagNode.innerHTML;
+        var tagIndex = array.indexOf(addedTags, removedTag);
+        if(tagIndex > -1) {
+          addedTags.splice(tagIndex, 1);
+        } else {
+          removedTags.push(removedTag);
+        }
+        okBtn.set("disabled", false);
+      });
+
+      // CREATE TAG ITEM ROWS //
+      var createItemTagsRow = lang.hitch(this, function (tagsListPane, tags) {
+        array.forEach(tags, lang.hitch(this, function (tag) {
+          var tagItemNode = put(tagsListPane, "div.tag-list-node.tagItem");
+          var clearTagNode = put(tagItemNode, "span.tag-list-clear.removeTagIcon", {title: "Remove Tag"});
+          var tagNode = put(tagItemNode, "div.tag-list-item", tag);
+          on(tagNode, "click", lang.hitch(this, onTagClick, tagNode));
+          on(clearTagNode, "click", lang.hitch(this, onClearClick, tagItemNode, tagNode));
+        }));
+      });
+
+      // CONTENT AREA //
       var contentAreaNode = put(editTagsDialog.containerNode, 'div.dijitDialogPaneContentArea.dialogContentPane');
       put(contentAreaNode, 'label', "Tags:");
 
+      // TAGS LIST PANE //
       var tagsListPane = put(contentAreaNode, "div.tags-list-pane");
-      array.forEach(item.tags, lang.hitch(this, function (tag) {
-        var tagItemNode = put(tagsListPane, "div.tag-list-node.tagItem");
-        var clearTagNode = put(tagItemNode, "span.tag-list-clear.removeTagIcon", {title: "Remove Tag"});
-        var tagNode = put(tagItemNode, "div.tag-list-item", tag);
-        on(tagNode, "click", lang.hitch(this, function (evt) {
-          var oldTag = tagNode.innerHTML;
-          getNewTag(oldTag).then(lang.hitch(this, function (newTags) {
-            var newTag = lang.trim(newTags[0]);
-            tagNode.innerHTML = newTag;
-            removedTags.push(oldTag);
-            addedTags.push(newTag);
-          }), lang.hitch(this, function (error) {
-            console.warn(error);
+      // CRAETE A TAG ROW FOR EACH TAG //
+      createItemTagsRow(tagsListPane, item.tags);
+
+      // ACTION BAR //
+      var actionBarNode = put(editTagsDialog.containerNode, "div.dijitDialogPaneActionBar");
+
+      // ADD NEW TAGS //
+      var addNewTagsBtn = new Button({
+        label: "Add New Tags",
+        iconClass: "addNewTagIcon"
+      }, put(actionBarNode, "div.tag-list-add-new-btn div"));
+      addNewTagsBtn.on("click", lang.hitch(this, function () {
+        getNewTag().then(lang.hitch(this, function (newTags) {
+          var tagsToAdd = [];
+          array.forEach(newTags, lang.hitch(this, function (newTag) {
+            if(array.indexOf(item.tags, newTag) === -1) {
+              tagsToAdd.push(newTag);
+            }
           }));
-        }));
-        on(clearTagNode, "click", lang.hitch(this, function (evt) {
-          if(confirm("Are you sure you want to remove this tag?")) {
-            put(tagItemNode, "!");
-            var removedTag = tagNode.innerHTML;
-            removedTags.push(removedTag);
+          if(tagsToAdd.length > 0) {
+            createItemTagsRow(tagsListPane, tagsToAdd);
+            addedTags = addedTags.concat(tagsToAdd);
+            okBtn.set("disabled", false);
           }
+        }), lang.hitch(this, function (error) {
+          console.log(error);
         }));
       }));
 
-      var actionBarNode = put(editTagsDialog.containerNode, 'div.dijitDialogPaneActionBar');
+
+      // UPDATE ITEM //
       var okBtn = new Button({
         label: "Update",
-        disabled: false
+        disabled: true
       }, put(actionBarNode, 'div'));
       okBtn.on('click', lang.hitch(this, function () {
         var newTags = query(".tag-list-item").map(function (node) {

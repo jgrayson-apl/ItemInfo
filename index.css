@@ -856,6 +856,10 @@ html, body, #mainContainer {
   display : none;
 }
 
+.tag-list-add-new-btn {
+  float : left !important;
+}
+
 .dgrid-selected {
   font-weight      : bolder !important;
   background-color : #ddd !important;
@@ -902,7 +906,6 @@ html, body, #mainContainer {
 }
 
 .esriSignInDialog .dijitButtonNode {
-  color        : #eee !important;
   background   : #333 !important;
   border-color : #444 !important;
 }
@@ -911,12 +914,20 @@ html, body, #mainContainer {
   box-shadow : 0 0 5px #222;
 }
 
+.esriSignInDialog .dijitDisabled .dijitButtonNode:hover {
+  box-shadow : none;
+}
+
 .esriSignInDialog .dijitButtonText {
   color : #ccc !important;
 }
 
 .esriSignInDialog .dijitButtonText:hover {
   color : #eee !important;
+}
+
+.esriSignInDialog .dijitDisabled .dijitButtonText {
+  color : #555 !important;
 }
 
 /*
