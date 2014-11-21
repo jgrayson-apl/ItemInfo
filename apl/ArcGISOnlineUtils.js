@@ -135,7 +135,10 @@ define([
                   }), lang.hitch(this, function (error) {
                     console.warn(error);
                   }));
+                } else {
+                  alert("Can't register sub-layers; this service doesn't support dynamic rendering: " + serviceItem.serviceName);
                 }
+
                 return lang.mixin(serviceItem, {
                   itemId: (registerServiceResponse.success) ? registerServiceResponse.id : ""
                 });

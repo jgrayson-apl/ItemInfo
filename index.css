@@ -404,6 +404,29 @@ html, body, #mainContainer {
   width : 250px;
 }
 
+#rs_serverServicesPane .field-name {
+  width : 400px;
+}
+
+#rs_serverServicesPane .field-type {
+  width : 100px;
+}
+
+#rs_serverServicesPane .field-tags {
+  width : 80px;
+}
+
+#rs_serverServicesPane .field-accessInformation {
+  width : 80px;
+}
+
+#rs_serverServicesPane .field-licenseInfo {
+  width : 80px;
+}
+#rs_serverServicesPane .field-itemId {
+  width : 80px;
+}
+
 .serverAction {
   color       : #555;
   font-weight : bolder;
@@ -994,5 +1017,7 @@ html, body, #mainContainer {
   text-shadow      : 1px 1px 3px #111;
   background-color : #444;
 }
+
+
 
 

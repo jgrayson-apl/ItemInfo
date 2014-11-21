@@ -712,6 +712,7 @@ require([
         }
 
       }), function (error) {
+        console.warn(error);
         dom.byId('connectStatus').innerHTML = "";
         put(dom.byId('connectStatus'), 'span.error', error.message);
       });
@@ -1728,13 +1729,14 @@ require([
       getTagItemsDeferred = searchPortalItems(queryParams).then(lang.hitch(this, function (allResults) {
         getTagItemsDeferred = null;
 
-        //var exactMatchResults = array.filter(allResults, function (result) {
-        //  return (array.indexOf(result.tags, userTag.tag) > -1);
-        //});
+        // ADDITIONALLY FILTER RESULTS FOR EXACT TAG MATCHES //
+        var exactMatchResults = array.filter(allResults, function (result) {
+          return (array.indexOf(result.tags, userTag.tag) > -1);
+        });
 
         var itemStore = new Observable(new Memory({
-          //data: exactMatchResults
-          data: allResults
+          data: exactMatchResults
+          //data: allResults
         }));
         deferred.resolve(itemStore);
       }));
@@ -2336,10 +2338,7 @@ require([
                 tagsList.store.remove(removedTag);
               }
             }
-            // TODO: ONLY REMOVE IF NOT USED BY ANY OTHER ITEMS...
-            if(sourceTagsList.store.get(removedTag)) {
-              sourceTagsList.store.remove(removedTag);
-            }
+            removeFromSourceTagList(removedTag);
           }));
 
           // ADD TAGS //
@@ -2360,6 +2359,21 @@ require([
       }));
 
       editTagsDialog.show();
+    }
+
+
+    function removeFromSourceTagList(tagToRemove) {
+
+      getTagsItemStore(tagToRemove).then(lang.hitch(this, function (itemStore) {
+        if(itemStore.data.length === 0) {
+          if(sourceTagsList.store.get(tagToRemove)) {
+            sourceTagsList.store.remove(tagToRemove);
+          }
+        }
+      }), lang.hitch(this, function (error) {
+        console.warn(error);
+      }));
+
     }
 
     // TAG ITEM SELECTED //
@@ -2492,7 +2506,9 @@ require([
           //console.log('replaceTagsFromSelection.all: ');
           tagItemList.clearSelection();
           tagsList.store.remove(selectedTagItem.id);
-          sourceTagsList.store.remove(selectedTagItem.id);  // TODO: ONLY REMOVE IF NOT USED IN ANY ITEM...
+          //sourceTagsList.store.remove(selectedTagItem.id);
+          removeFromSourceTagList(selectedTagItem.id);
+
           if(!tagsList.store.get(newTag)) {
             tagsList.store.add({id: newTag, tag: newTag});
           }
@@ -2531,7 +2547,9 @@ require([
       all(updateDeferredArray).then(lang.hitch(this, function () {
         //console.log('removeTagsFromSelection.all: ');
         tagsList.store.remove(selectedTagItem.id);
-        sourceTagsList.store.remove(selectedTagItem.id);  // TODO: ONLY REMOVE IF NOT USED IN ANY ITEM...
+        //sourceTagsList.store.remove(selectedTagItem.id);
+        removeFromSourceTagList(selectedTagItem.id);
+
         tagItemList.clearSelection();
         registry.byId('removeTagBtn').set('disabled', true);
         registry.byId('replaceTagBtn').set('disabled', true);
@@ -2669,7 +2687,6 @@ require([
 
       return deferred.promise;
     }
-
 
   });
 });

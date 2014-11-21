@@ -38,8 +38,9 @@ define([
       return esriRequest({
         url: requestUrl,
         content: {
-          f: 'json'
-        }
+          f: "json"
+        },
+        handleAs:"json"
       });
     },
 
