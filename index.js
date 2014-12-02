@@ -77,6 +77,8 @@ require([
   var arcGISSearchUtils = null;
   var arcGISOnlineUtils = null;
 
+  //var tagEditorActive = false;
+
   var portalUrlList = [
     document.location.protocol + "//www.arcgis.com"
   ];
@@ -291,22 +293,26 @@ require([
             tagsList.clearSelection();
           }
 
-          /*var disableSourceSelection = false;
+          /*
 
-           switch (selectedChild.title) {
-           case "Details":
-           break;
-           case "Gallery":
-           break;
-           case "CSV":
-           break;
-           case "Tag Editor":
-           disableSourceSelection = true;
-           break;
-           case "Register Services":
-           disableSourceSelection = true;
-           break;
-           }
+          //var disableSourceSelection = false;
+          switch (selectedChild.title) {
+            case "Details":
+              break;
+            case "Gallery":
+              break;
+            case "CSV":
+              break;
+            case "Tag Editor":
+              //disableSourceSelection = true;
+              tagEditorActive = true;
+              break;
+            case "Register Services":
+              //disableSourceSelection = true;
+              break;
+            default:
+              tagEditorActive = false;
+          }
 
            //sourceFoldersList.set('selectionMode', disableSourceSelection ? "none" : "single");
            //sourceGroupsList.set('selectionMode', disableSourceSelection ? "none" : "single");
@@ -809,9 +815,9 @@ require([
      */
     function updateRegisterServicesBtn() {
       var selectedItems = [];
-      for (var id in serverServicesList.selection) {
-        if(serverServicesList.selection[id]) {
-          selectedItems.push(serverServicesList.row(id).data);
+      for (var selectionId in serverServicesList.selection) {
+        if(serverServicesList.selection[selectionId]) {
+          selectedItems.push(serverServicesList.row(selectionId).data);
         }
       }
       registry.byId('registerServicesBtn').set('disabled', (selectedItems.length === 0));
@@ -1566,6 +1572,8 @@ require([
 
       updateRegisterServicesOption(true);
 
+      registry.byId("optionsContainer").selectChild(registry.byId("detailsPane"));
+
     }
 
     /**
@@ -1699,6 +1707,7 @@ require([
         }));
         deferred.resolve(itemStore);
       }));
+
 
       return deferred.promise;
     }
@@ -2146,6 +2155,8 @@ require([
         }));
       }));
 
+      displayTagCloud(allResults);
+
       if(!tagItemList) {
 
         var tagItemColumns = [
@@ -2278,6 +2289,8 @@ require([
 
       // CONTENT AREA //
       var contentAreaNode = put(editTagsDialog.containerNode, 'div.dijitDialogPaneContentArea.dialogContentPane');
+
+      // TAGS LABEL //
       put(contentAreaNode, 'label', "Tags:");
 
       // TAGS LIST PANE //
@@ -2687,6 +2700,67 @@ require([
 
       return deferred.promise;
     }
+
+    function displayTagCloud(items) {
+
+      //if(tagEditorActive) {
+
+        var tagList = [];
+        array.forEach(items, lang.hitch(this, function (item) {
+          array.forEach(item.tags, lang.hitch(this, function (tag) {
+            if(tag) {
+              if(tagList[tag]) {
+                tagList[tag].size = tagList[tag].size + 1;
+              } else {
+                tagList[tag] = {text: tag, size: 1};
+              }
+            }
+          }));
+        }));
+
+        var wordsFrequencyList = array.map(Object.keys(tagList), lang.hitch(this, function (tag) {
+          return tagList[tag];
+        }));
+
+
+        var wordCloudNode = registry.byId("tagCloudPane").containerNode;
+        wordCloudNode.innerHTML = "";
+        var panelWidth = wordCloudNode.offsetWidth || 200;
+        var paneHeight = wordCloudNode.offsetHeight || 200;
+
+        var fill = d3.scale.category20b();
+
+        d3.layout.cloud().size([panelWidth, paneHeight])
+            .words(wordsFrequencyList).padding(1)
+            .rotate(function (d) {
+              return 0; // ~~(Math.random()) * 90;
+            })
+            .font("Impact").spiral("archimedean")
+            .fontSize(function (d) {
+              return 11 * d.size;
+            }).on("end", draw).start();
+
+
+        function draw(words) {
+          d3.select("#" + wordCloudNode.id).append("svg")
+              .attr("width", panelWidth).attr("height", paneHeight)
+              .append("g").attr("transform", "translate(" + (panelWidth / 2 - (panelWidth * 0.01)) + "," + (paneHeight / 2 + 5) + ")")
+              .selectAll("text").data(words).enter().append("text")
+              .style("font-size", function (d) {
+                return d.size + "px";
+              }).style("font-family", "Impact")
+              .style("fill", function (d, i) {
+                return fill(i);
+              }).attr("text-anchor", "middle")
+              .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              }).text(function (d) {
+                return d.text;
+              });
+        }
+
+      }
+    //}
 
   });
 });

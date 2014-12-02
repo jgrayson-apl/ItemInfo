@@ -22,6 +22,8 @@
         ]
       };
     </script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="./apl/d3.layout.cloud.js"></script>
     <script type="text/javascript" src="//js.arcgis.com/3.11/"></script>
     <script type="text/javascript" src="index.js"></script>
     <script type="text/javascript">
@@ -135,6 +137,7 @@
               <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
                 <div id="tagListPane"></div>
               </div>
+              <div id="tagCloudPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom',style:{height:'40%'}"></div>
             </div>
           </div>
           <div id="registerServicesPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Register Services',iconClass:'registerServicesIcon',gutters:false">

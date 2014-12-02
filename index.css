@@ -310,7 +310,7 @@ html, body, #mainContainer {
 
 #csvTextPane {
   overflow         : auto;
-  border           : solid 1px silver;
+  border           : solid 1px #ccc;
   background-color : #eee !important;
 }
 
@@ -324,6 +324,12 @@ html, body, #mainContainer {
 #tagEditorPane .dijitContentPane, #syncCountsPane .dijitContentPane {
   margin  : 0 !important;
   padding : 0 !important;
+}
+
+#tagCloudPane {
+  border-top       : solid 1px #ccc;
+  background-color : #fff !important;
+  overflow         : hidden;
 }
 
 .tagEditorDialogContentArea {
@@ -423,6 +429,7 @@ html, body, #mainContainer {
 #rs_serverServicesPane .field-licenseInfo {
   width : 80px;
 }
+
 #rs_serverServicesPane .field-itemId {
   width : 80px;
 }
@@ -849,7 +856,6 @@ html, body, #mainContainer {
   margin           : 5px 10px 5px 10px;
   color            : #444;
   background-color : #fff;
-  border           : solid 1px #ddd;
 }
 
 .tag-list-node {
@@ -857,8 +863,13 @@ html, body, #mainContainer {
   border-top : solid 1px #ddd;
 }
 
+.tag-list-node:first-child {
+  border : none !important;
+}
+
 .tag-list-node:hover {
   color            : #eee !important;
+  text-shadow      : 1px 1px 0 #222;
   background-color : #666 !important;
 }
 
