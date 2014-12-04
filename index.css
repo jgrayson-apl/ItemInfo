@@ -121,7 +121,7 @@ html, body, #mainContainer {
 }
 
 #sourceItemsController span[widgetid="sourceItemsController_tagEditorPane"] {
-  border-left  : solid 1px #333 !important;
+  border-left  : solid 2px #333 !important;
   margin-left  : 15px;
   padding-left : 15px;
 }
@@ -717,6 +717,10 @@ html, body, #mainContainer {
 
 .iconApplication, .iconWebMappingApplication, .iconMobileApplication {
   background : url(./images/WebMappingApplication.png) no-repeat 4px;
+}
+
+.iconDocumentLink, .iconImage, .iconMicrosoftExcel, .iconPDF, .iconSceneDocument {
+  background : url(./images/file.png) no-repeat 4px;
 }
 
 .iconSymbolSet, .iconColorSet, .iconFeatureCollection, .iconFeatureCollectionTemplate, .iconFeaturedItems {

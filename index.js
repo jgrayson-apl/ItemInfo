@@ -74,6 +74,7 @@ require([
   var serverFoldersList = null;
   var serverServicesList = null;
 
+  var currentSearchParams = null;
   var arcGISSearchUtils = null;
   var arcGISOnlineUtils = null;
 
@@ -99,7 +100,7 @@ require([
             var bValue = b[sort[i].attribute];
             if(aValue !== bValue) {
               var result = 0;
-              if(aValue.hasOwnProperty("toLowerCase")) {
+              if(typeof aValue == "string") {
                 result = aValue.toLowerCase() > bValue.toLowerCase() ? 1 : -1;
               } else {
                 result = aValue > bValue ? 1 : -1;
@@ -530,6 +531,7 @@ require([
                   registry.byId('agsInstance').set('value', serverInfo.agsInstance);
                   updateServerUrl();
                   getServerFolders();
+                  serverListDialog.hide();
                 })
               });
               put(serverItemNode, 'div.removeServer', {
@@ -562,13 +564,13 @@ require([
               }
             })
           }).placeAt(actionBar);
+
           var okBtn = new Button({
-            "label": "Ok",
+            "label": "Cancel",
             "onClick": lang.hitch(this, function () {
               serverListDialog.hide();
             })
           }).placeAt(actionBar);
-
 
           var serverListDialog = new Dialog({
             className: "serverListDialog",
@@ -630,7 +632,7 @@ require([
      */
     function clearServerList() {
       if(cookie.isSupported()) {
-        dojo.cookie('register-services-config', '...deleting....', {expires: -1});
+        cookie('register-services-config', '...deleting....', {expires: -1});
       }
     }
 
@@ -908,7 +910,7 @@ require([
       array.forEach(arcGISSearchUtils.getSearchParameters(), lang.hitch(this, function (parameter) {
 
         var parameterPane = new TitlePane({
-          id: "parameterPane." + parameter.label,
+          id: "parameterPane." + parameter.id,
           "class": "parameterTitlePane",
           title: parameter.label,
           open: false
@@ -924,7 +926,7 @@ require([
             var stringInput = new TextBox({
               intermediateChanges: true,
               placeHolder: lang.replace("Enter {label} here...", parameter),
-              "class": "parameterInput parameter_" + parameter.label,
+              "class": "parameterInput parameter_" + parameter.id,
               parameterName: parameter.id
             }, put(parameterInputsNode, 'div'));
             stringInput.startup();
@@ -937,7 +939,7 @@ require([
               var stringInput2 = new TextBox({
                 intermediateChanges: true,
                 placeHolder: lang.replace("Enter {label} here...", parameter),
-                "class": "parameterInput parameter_" + parameter.label,
+                "class": "parameterInput parameter_" + parameter.id,
                 parameterName: parameter.id
               }, put(parameterInputsNode, 'div'));
               stringInput2.startup();
@@ -951,7 +953,7 @@ require([
             var numberInput = new NumberTextBox({
               intermediateChanges: true,
               placeHolder: lang.replace("Enter {label} here...", parameter),
-              "class": "parameterInput parameter_" + parameter.label,
+              "class": "parameterInput parameter_" + parameter.id,
               parameterName: parameter.id
             }, put(parameterInputsNode, 'div'));
             numberInput.startup();
@@ -964,7 +966,7 @@ require([
               var numberInput2 = new NumberTextBox({
                 intermediateChanges: true,
                 placeHolder: lang.replace("Enter {label} here...", parameter),
-                "class": "parameterInput parameter_" + parameter.label,
+                "class": "parameterInput parameter_" + parameter.id,
                 parameterName: parameter.id
               }, put(parameterInputsNode, 'div'));
               numberInput2.startup();
@@ -978,7 +980,7 @@ require([
             var dateInput = new DateTextBox({
               intermediateChanges: true,
               placeHolder: lang.replace("Enter {label} here...", parameter),
-              "class": "parameterInput parameter_" + parameter.label,
+              "class": "parameterInput parameter_" + parameter.id,
               parameterName: parameter.id
             }, put(parameterInputsNode, 'div'));
             dateInput.startup();
@@ -991,7 +993,7 @@ require([
               var dateInput2 = new DateTextBox({
                 intermediateChanges: true,
                 placeHolder: lang.replace("Enter {label} here...", parameter),
-                "class": "parameterInput parameter_" + parameter.label,
+                "class": "parameterInput parameter_" + parameter.id,
                 parameterName: parameter.id
               }, put(parameterInputsNode, 'div'));
               dateInput2.startup();
@@ -1005,7 +1007,7 @@ require([
             var extentInput = new TextBox({
               intermediateChanges: true,
               placeHolder: lang.replace("Enter {label} here...", parameter),
-              "class": "parameterInput parameter_" + parameter.label,
+              "class": "parameterInput parameter_" + parameter.id,
               parameterName: parameter.id
             }, put(parameterInputsNode, 'div'));
             extentInput.startup();
@@ -1016,7 +1018,7 @@ require([
           case "list":
             put(parameterInputsNode, 'label.parameterLabelNode', lang.replace("{label}: ", parameter));
             var selectInput = new Select({
-              "class": "parameterInput parameter_" + parameter.label,
+              "class": "parameterInput parameter_" + parameter.id,
               parameterName: parameter.id,
               options: array.map(parameter.list, function (listItem) {
                 return {label: listItem, value: listItem};
@@ -1042,48 +1044,104 @@ require([
 
     }
 
+
+    /**
+     *
+     */
+    function displaySavedParameters() {
+
+      this.searchParameterList = loadSearchParameterList();
+      if(this.searchParameterList) {
+
+        array.forEach(Object.keys(this.searchParameterList.searches), lang.hitch(this, function (searchName) {
+          var searchParameters = this.searchParameterList.searches[searchName];
+
+
+        }));
+
+      }
+    }
+
+    /**
+     *
+     * @returns {*}
+     */
+    function loadSearchParameterList() {
+      var searchParameterList = null;
+      if(cookie.isSupported()) {
+        var searchParameterListCookie = cookie('search-parameters-config');
+        if(searchParameterListCookie) {
+          searchParameterList = json.parse(searchParameterListCookie);
+        } else {
+          searchParameterList = {searches: {}};
+          saveServerList(searchParameterList);
+        }
+      }
+      return searchParameterList;
+    }
+
+    /**
+     *
+     * @param searchParameterList
+     */
+    function saveSearchParameterList(searchParameterList) {
+      if(cookie.isSupported()) {
+        cookie('search-parameters-config', json.stringify(searchParameterList), {expires: 360});
+      }
+    }
+
+    /**
+     *
+     */
+    function clearSearchParameterList() {
+      if(cookie.isSupported()) {
+        cookie('search-parameters-config', '...deleting....', {expires: -1});
+      }
+    }
+
     // UPDATE PARAMETER QUERY //
     function updateParameterQuery() {
 
-      var params = [];
+      var params = {};
       query('.parameterInput').forEach(lang.hitch(this, function (node) {
         var input = registry.byNode(node);
-        if(input) {
-          var val = input.get('value');
-          if(val && (val != "") && (val != "none")) {
 
-            //if(isNaN(val) && (val.indexOf(" ") > -1)) {
-            //  val = lang.replace('"{0}"', [val]);
-            //}
+        var val = input.get('value');
+        if(val && (val != "") && (val != "none")) {
 
-            //console.log(input.declaredClass, val.valueOf());
+          //if(isNaN(val) && (val.indexOf(" ") > -1)) {
+          //  val = lang.replace('"{0}"', [val]);
+          //}
 
-            var paramTemplate = '{0}:{1}';
-            switch (input.declaredClass) {
-              case "dijit.form.DateTextBox":
-                paramTemplate = '{0}:000000{1}';
-                break;
-              case "dijit.form.Select":
-              case "dijit.form.TextBox":
-                if(val.valueOf().split(" ").length > 1) {
-                  paramTemplate = '{0}:"{1}"';
-                }
-                break;
-            }
+          //console.log(input.declaredClass, val.valueOf());
 
-            var paramQuery = lang.replace(paramTemplate, [input.parameterName, val.valueOf()]);
+          var paramTemplate = '{0}:{1}';
+          switch (input.declaredClass) {
+            case "dijit.form.DateTextBox":
+              paramTemplate = '{0}:000000{1}';
+              break;
+            case "dijit.form.Select":
+            case "dijit.form.TextBox":
+              if(val.valueOf().split(" ").length > 1) {
+                paramTemplate = '{0}:"{1}"';
+              }
+              break;
+          }
 
-            if(!params[input.parameterName]) {
-              params[input.parameterName] = paramQuery;
-            } else {
-              var otherVal = params[input.parameterName].split(':')[1];
-              var paramsTemplate = (input.declaredClass === "dijit.form.DateTextBox") ? "{0}:[{1} TO 000000{2}]" : "{0}:[{1} TO {2}]";
-              //var paramsTemplate = "{0}:[{1} TO {2}]";
-              params[input.parameterName] = lang.replace(paramsTemplate, [input.parameterName, otherVal, val.valueOf()])
-            }
+          var paramQuery = lang.replace(paramTemplate, [input.parameterName, val.valueOf()]);
+
+          if(!params[input.parameterName]) {
+            params[input.parameterName] = paramQuery;
+          } else {
+            var otherVal = params[input.parameterName].split(':')[1];
+            var paramsTemplate = (input.declaredClass === "dijit.form.DateTextBox") ? "{0}:[{1} TO 000000{2}]" : "{0}:[{1} TO {2}]";
+            //var paramsTemplate = "{0}:[{1} TO {2}]";
+            params[input.parameterName] = lang.replace(paramsTemplate, [input.parameterName, otherVal, val.valueOf()])
           }
         }
       }));
+
+      currentSearchParams = params;
 
       var paramParts = [];
       for (var paramName in params) {
@@ -1796,6 +1854,7 @@ require([
       portalGroup.queryItems(queryParams).then(lang.hitch(this, function (response) {
         allResults = allResults.concat(response.results);
         if(response.nextQueryParams.start > 0) {
+          dom.byId('sourceItemsCount').innerHTML = lang.replace("{nextQueryParams.start} of {total}", response);
           searchGroupItems(portalGroup, response.nextQueryParams, allResults).then(deferred.resolve, deferred.reject);
         } else {
           deferred.resolve(allResults);
@@ -1822,6 +1881,7 @@ require([
       portalUser.portal.queryItems(queryParams).then(lang.hitch(this, function (response) {
         allResults = allResults.concat(response.results);
         if(response.nextQueryParams.start > 0) {
+          dom.byId('sourceItemsCount').innerHTML = lang.replace("{nextQueryParams.start} of {total}", response);
           searchPortalItems(response.nextQueryParams, allResults).then(deferred.resolve, deferred.reject);
         } else {
           deferred.resolve(allResults);
