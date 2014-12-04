@@ -15,7 +15,7 @@ define([
         "id": "Web Map",
         "label": "Web Map",
         "data": "Text/JSON",
-        "typeKeywords": "Web Map,Explorer Web Map,Map,Online Map,ArcGIS Online",
+        "typeKeywords": "Web Map,Explorer Web Map,Map,Online Map,ArcGIS Online,Collector,Web AppBuilder,Presentation Map",
         "keywordRequires": "",
         "description": "Web map authored using the arcgis.com Javascript Web Map viewer. Usable by web, mobile, and desktop clients.",
         "other": ""
@@ -33,7 +33,7 @@ define([
         "id": "Feature Service",
         "label": "Feature Service",
         "data": "Text/JSON (optional)",
-        "typeKeywords": "Data,Service,Feature Service,ArcGIS Server,Feature Access",
+        "typeKeywords": "Data,Service,Feature Service,ArcGIS Server,Feature Access,Collector",
         "keywordRequires": "",
         "description": "ArcGIS Server Feature Service",
         "other": "The URL to the service is stored in the url property of the item. Optional JSON data contains overridden service properties."
@@ -150,7 +150,7 @@ define([
         "id": "Web Mapping Application",
         "label": "Web Mapping Application",
         "data": "Text/JSON",
-        "typeKeywords": "Web Map,Map,Online Map,Mapping Site",
+        "typeKeywords": "Web Map,Map,Online Map,Mapping Site,Web AppBuilder",
         "keywordRequires": "Required: technology keywords:JavaScript Flex Silverlight Web ADF Other; Required: purpose keywords – one of:Ready To Use, Configurable, Code Sample",
         "description": "A web mapping application built using: ArcGIS API for JavaScript, ArcGIS API for Flex, ArcGIS API for Silverlight, Java Web Application Developer Framework, .NET Web Application Developer Framework",
         "other": "Client must supply the appropriate technology and purpose keywords (Ready To Use, Configurable, Code Sample) when adding this item.The URL to the service is stored in the url property of the item."
@@ -168,7 +168,7 @@ define([
         "id": "Code Attachment",
         "label": "Code Attachment",
         "data": "File",
-        "typeKeywords": "Code",
+        "typeKeywords": "Code,Web AppBuilder",
         "keywordRequires": "Required: one of {Web Mapping Application, Explorer, Desktop, Mobile, iPhone}; Required if WMA: one of {Javascript, Flex, Silverlight }",
         "description": "The sample code associated with an application whose purpose is code sample.",
         "other": ""
@@ -412,15 +412,16 @@ define([
 
       /**
        *
-       * @type {dojo.data.Memory}
-       *//*
-      this.itemTypesStore = new Memory({
-        data: this._itemTypeInfos
-      });*/
+       * @type {Memory}
+       */
+      /*
+       this.itemTypesStore = new Memory({
+       data: this._itemTypeInfos
+       });*/
 
       /**
        *
-       * @type {dojo.data.Memory}
+       * @type {Memory}
        */
       this.searchParametersStore = new Memory({
         data: this._searchParameterInfos
@@ -480,6 +481,14 @@ define([
 
     /**
      *
+     * @returns {*}
+     */
+    getSearchParameters: function () {
+      return this.searchParametersStore.query();
+    },
+
+    /**
+     *
      * @param id
      * @returns {*}
      */
@@ -488,6 +497,8 @@ define([
     }
 
   });
+
+  ArcGISSearchUtils.version = "0.1.0";
 
   return ArcGISSearchUtils;
 });

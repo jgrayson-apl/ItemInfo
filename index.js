@@ -77,7 +77,8 @@ require([
   var arcGISSearchUtils = null;
   var arcGISOnlineUtils = null;
 
-  //var tagEditorActive = false;
+  var tagCloud = null;
+  var maxItemCount = 2500;
 
   var portalUrlList = [
     document.location.protocol + "//www.arcgis.com"
@@ -85,8 +86,7 @@ require([
 
   //
   // WE NEED CASE INSENSITIVE SORTS...
-  //
-  // http://stackoverflow.com/questions/26783489/non-case-sensitive-sorting-in-dojo-dgrid
+  //   http://stackoverflow.com/questions/26783489/non-case-sensitive-sorting-in-dojo-dgrid
   //
   var Memory = declare(MemoryStore, {
     query: function (query, queryOptions) {
@@ -95,10 +95,15 @@ require([
         // Replace sort array with a function equivalent that performs case-insensitive sorting
         queryOptions.sort = function (a, b) {
           for (var i = 0; i < sort.length; i++) {
-            var aValue = a[sort[i].attribute].toLowerCase();
-            var bValue = b[sort[i].attribute].toLowerCase();
+            var aValue = a[sort[i].attribute];
+            var bValue = b[sort[i].attribute];
             if(aValue !== bValue) {
-              var result = aValue > bValue ? 1 : -1;
+              var result = 0;
+              if(aValue.hasOwnProperty("toLowerCase")) {
+                result = aValue.toLowerCase() > bValue.toLowerCase() ? 1 : -1;
+              } else {
+                result = aValue > bValue ? 1 : -1;
+              }
               return result * (sort[i].descending ? -1 : 1);
             }
           }
@@ -295,24 +300,24 @@ require([
 
           /*
 
-          //var disableSourceSelection = false;
-          switch (selectedChild.title) {
-            case "Details":
-              break;
-            case "Gallery":
-              break;
-            case "CSV":
-              break;
-            case "Tag Editor":
-              //disableSourceSelection = true;
-              tagEditorActive = true;
-              break;
-            case "Register Services":
-              //disableSourceSelection = true;
-              break;
-            default:
-              tagEditorActive = false;
-          }
+           //var disableSourceSelection = false;
+           switch (selectedChild.title) {
+           case "Details":
+           break;
+           case "Gallery":
+           break;
+           case "CSV":
+           break;
+           case "Tag Editor":
+           //disableSourceSelection = true;
+           tagEditorActive = true;
+           break;
+           case "Register Services":
+           //disableSourceSelection = true;
+           break;
+           default:
+           tagEditorActive = false;
+           }
 
            //sourceFoldersList.set('selectionMode', disableSourceSelection ? "none" : "single");
            //sourceGroupsList.set('selectionMode', disableSourceSelection ? "none" : "single");
@@ -434,6 +439,7 @@ require([
 
           // SEARCH PARAMETERS //
           buildSearchParameterUI();
+
 
         }), lang.hitch(this, function (error) {
           alert("Trouble signing in to this Portal with these credentials...");
@@ -833,9 +839,9 @@ require([
         accessInformation: registry.byId('commonAccessInput').get('value'),
         licenseInfo: registry.byId('commonCopyrightInput').get('value')
       };
-      for (var id in serverServicesList.selection) {
-        if(serverServicesList.selection[id]) {
-          var item = serverServicesList.store.get(id);
+      for (var selectionId in serverServicesList.selection) {
+        if(serverServicesList.selection[selectionId]) {
+          var item = serverServicesList.store.get(selectionId);
           item = lang.mixin(item, commonItemProperties);
           serverServicesList.store.put(item);
         }
@@ -899,8 +905,7 @@ require([
 
       var parameterListPane = registry.byId('parameterListPane');
 
-      array.forEach(arcGISSearchUtils.searchParameterIds, lang.hitch(this, function (searchParameterId) {
-        var parameter = arcGISSearchUtils.getSearchParameter(searchParameterId);
+      array.forEach(arcGISSearchUtils.getSearchParameters(), lang.hitch(this, function (parameter) {
 
         var parameterPane = new TitlePane({
           id: "parameterPane." + parameter.label,
@@ -1037,6 +1042,108 @@ require([
 
     }
 
+    // UPDATE PARAMETER QUERY //
+    function updateParameterQuery() {
+
+      var params = [];
+      query('.parameterInput').forEach(lang.hitch(this, function (node) {
+        var input = registry.byNode(node);
+        if(input) {
+          var val = input.get('value');
+          if(val && (val != "") && (val != "none")) {
+
+            //if(isNaN(val) && (val.indexOf(" ") > -1)) {
+            //  val = lang.replace('"{0}"', [val]);
+            //}
+
+            //console.log(input.declaredClass, val.valueOf());
+
+            var paramTemplate = '{0}:{1}';
+            switch (input.declaredClass) {
+              case "dijit.form.DateTextBox":
+                paramTemplate = '{0}:000000{1}';
+                break;
+              case "dijit.form.Select":
+              case "dijit.form.TextBox":
+                if(val.valueOf().split(" ").length > 1) {
+                  paramTemplate = '{0}:"{1}"';
+                }
+                break;
+            }
+
+            var paramQuery = lang.replace(paramTemplate, [input.parameterName, val.valueOf()]);
+
+            if(!params[input.parameterName]) {
+              params[input.parameterName] = paramQuery;
+            } else {
+              var otherVal = params[input.parameterName].split(':')[1];
+              var paramsTemplate = (input.declaredClass === "dijit.form.DateTextBox") ? "{0}:[{1} TO 000000{2}]" : "{0}:[{1} TO {2}]";
+              //var paramsTemplate = "{0}:[{1} TO {2}]";
+              params[input.parameterName] = lang.replace(paramsTemplate, [input.parameterName, otherVal, val.valueOf()])
+            }
+          }
+        }
+      }));
+
+      var paramParts = [];
+      for (var paramName in params) {
+        if(params.hasOwnProperty(paramName)) {
+          paramParts.push(params[paramName]);
+        }
+      }
+
+      dom.byId('searchQueryString').innerHTML = paramParts.join(' AND ');
+      getQueryCount();
+
+    }
+
+    // GET QUERY COUNT //
+    function getQueryCount() {
+
+      if(queryCountDeferred) {
+        dom.byId('searchQueryResultCount').innerHTML = "";
+        queryCountDeferred.cancel();
+      }
+      registry.byId('applySearchBtn').set('disabled', true);
+
+      var searchQuery = dom.byId('searchQueryString').innerHTML;
+      if(searchQuery && (searchQuery.length > 0)) {
+        dom.byId('searchQueryResultCount').innerHTML = "Searching...";
+        var queryParams = {
+          q: searchQuery,
+          num: 0
+        };
+        queryCountDeferred = portalUser.portal.queryItems(queryParams).then(lang.hitch(this, function (response) {
+          queryCountDeferred = null;
+
+          var exceedsLimit = ((response.total < 1) || (response.total > maxItemCount));
+          registry.byId('applySearchBtn').set('disabled', exceedsLimit);
+
+          dom.byId('searchQueryResultCount').innerHTML = lang.replace("{0} items found", [number.format(response.total)]);
+          dom.byId('searchQueryResultCount').innerHTML += exceedsLimit ? "<span class='exceeds-limit'> (exceeds app limit of " + number.format(maxItemCount) + ")</span>" : "";
+
+        }));
+      } else {
+        dom.byId('searchQueryResultCount').innerHTML = "";
+      }
+    }
+
+
+    // APPLY SEARCH QUERY //
+    function applySearchQuery() {
+      var searchQuery = dom.byId('searchQueryString').innerHTML;
+      if(searchQuery && (searchQuery.length > 0)) {
+        sourceFoldersList.clearSelection();
+        sourceGroupsList.clearSelection();
+        sourceTagsList.clearSelection();
+        domClass.add('sourceItemsCount', 'searching');
+        dom.byId('sourceItemsCount').innerHTML = 'Searching...';
+        var emptyStore = new Observable(new Memory({data: []}));
+        sourceItemList.set('store', emptyStore);
+        searchPortalItemsByQuery(searchQuery).then(updateSourceItemList);
+      }
+    }
+
     // FIND SIMILAR TAGS //
     function findSimilarTags() {
 
@@ -1141,89 +1248,6 @@ require([
       registry.byId('sourceListsContainer').selectChild(registry.byId('searchPane'));
     }
 
-    // UPDATE PARAMETER QUERY //
-    function updateParameterQuery() {
-
-      var params = [];
-      query('.parameterInput').forEach(lang.hitch(this, function (node) {
-        var input = registry.byNode(node);
-        if(input) {
-          var val = input.get('value');
-          if(val && (val != "") && (val != "none")) {
-
-            //if(isNaN(val) && (val.indexOf(" ") > -1)) {
-            //  val = lang.replace('"{0}"', [val]);
-            //}
-
-            var paramTemplate = (input.declaredClass === "dijit.form.DateTextBox") ? "{0}:000000{1}" : "{0}:{1}";
-            //var paramTemplate = "{0}:{1}";
-            var paramQuery = lang.replace(paramTemplate, [input.parameterName, val.valueOf()]);
-
-            if(!params[input.parameterName]) {
-              params[input.parameterName] = paramQuery;
-            } else {
-              var otherVal = params[input.parameterName].split(':')[1];
-              var paramsTemplate = (input.declaredClass === "dijit.form.DateTextBox") ? "{0}:[{1} TO 000000{2}]" : "{0}:[{1} TO {2}]";
-              //var paramsTemplate = "{0}:[{1} TO {2}]";
-              params[input.parameterName] = lang.replace(paramsTemplate, [input.parameterName, otherVal, val.valueOf()])
-            }
-          }
-        }
-      }));
-
-      var paramParts = [];
-      for (var paramName in params) {
-        if(params.hasOwnProperty(paramName)) {
-          paramParts.push(params[paramName]);
-        }
-      }
-
-      dom.byId('searchQueryString').innerHTML = paramParts.join(' AND ');
-      getQueryCount();
-
-    }
-
-    // GET QUERY COUNT //
-    function getQueryCount() {
-
-      if(queryCountDeferred) {
-        dom.byId('searchQueryResultCount').innerHTML = "";
-        queryCountDeferred.cancel();
-      }
-      registry.byId('applySearchBtn').set('disabled', true);
-
-      var searchQuery = dom.byId('searchQueryString').innerHTML;
-      if(searchQuery && (searchQuery.length > 0)) {
-        dom.byId('searchQueryResultCount').innerHTML = "Searching...";
-        var queryParams = {
-          q: searchQuery,
-          num: 0
-        };
-        queryCountDeferred = portalUser.portal.queryItems(queryParams).then(lang.hitch(this, function (response) {
-          queryCountDeferred = null;
-          dom.byId('searchQueryResultCount').innerHTML = lang.replace("{total} items found", response);
-          registry.byId('applySearchBtn').set('disabled', ((response.total < 1) || (response.total > 1000)));
-        }));
-      } else {
-        dom.byId('searchQueryResultCount').innerHTML = "";
-      }
-    }
-
-
-    // APPLY SEARCH QUERY //
-    function applySearchQuery() {
-      var searchQuery = dom.byId('searchQueryString').innerHTML;
-      if(searchQuery && (searchQuery.length > 0)) {
-        sourceFoldersList.clearSelection();
-        sourceGroupsList.clearSelection();
-        sourceTagsList.clearSelection();
-        domClass.add('sourceItemsCount', 'searching');
-        dom.byId('sourceItemsCount').innerHTML = 'Searching...';
-        var emptyStore = new Observable(new Memory({data: []}));
-        sourceItemList.set('store', emptyStore);
-        searchPortalItemsByQuery(searchQuery).then(updateSourceItemList);
-      }
-    }
 
     function getServicesColumns() {
       var columns = [];
@@ -1499,7 +1523,7 @@ require([
 
       // SET QUERY FOR SOURCE ITEM LIST //
       sourceItemList.set('query', itemQuery, {
-        count: 1000,
+        count: maxItemCount,
         sort: 'title'
       });
     }
@@ -1549,7 +1573,7 @@ require([
       sourceFoldersList.clearSelection();
 
       var emptyStore = new Observable(new Memory({data: []}));
-      sourceItemList.set('store', emptyStore, {}, {count: 1000, sort: 'title'});
+      sourceItemList.set('store', emptyStore, {}, {count: maxItemCount, sort: 'title'});
       registry.byId('sourceItemGallery').set('content', "");
       registry.byId('csvTextArea').set('value', "");
 
@@ -1909,7 +1933,7 @@ require([
     function updateSourceItemList(store) {
       registry.byId('sourceItemsFilterInput').set('value', "");
       updateTypeList(store.data);
-      sourceItemList.set('store', store, {}, {count: 1000, sort: 'title'});
+      sourceItemList.set('store', store, {}, {count: maxItemCount, sort: 'title'});
       domClass.remove('sourceItemsCount', 'searching');
     }
 
@@ -2141,21 +2165,40 @@ require([
     // DISPLAY TAG EDITOR //
     function updateTagEditor(allResults) {
 
-      var tagList = [];
-      var tagItems = [];
-      array.forEach(allResults, lang.hitch(this, function (result) {
-        array.forEach(result.tags, lang.hitch(this, function (tag) {
-          if(array.indexOf(tagList, tag) === -1) {
-            tagList.push(tag);
-            tagItems.push({
-              id: tag,
-              tag: tag
-            });
+      // note: use object instead of array to avoid bloated associative array
+      //       full of 'undefined' values when adding 'numeric' tags like 2013
+      var tagList = {};
+      array.forEach(allResults, lang.hitch(this, function (item) {
+        array.forEach(item.tags, lang.hitch(this, function (tag) {
+          if(!tagList.hasOwnProperty(tag)) {
+            tagList[tag] = {id: tag, tag: tag, text: tag, size: 1, count: 1};
+          } else {
+            ++tagList[tag].size;
+            ++tagList[tag].count;
           }
         }));
       }));
+      // convert to array of objects...
+      var wordsFrequencyList = array.map(Object.keys(tagList), lang.hitch(this, function (tag) {
+        return tagList[tag];
+      }));
+      //if(wordsFrequencyList.length === 0) {
+      //  wordsFrequencyList = [{id: "No Tags", tag: "No Tags", text: "No Tags", size: 1, count: 1}];
+      //}
 
-      displayTagCloud(allResults);
+
+      /*
+       if(resizeHandle) {
+       resizeHandle.remove();
+       resizeHandle = null;
+       }
+       resizeHandle = aspect.after(registry.byId("tagEditorActionPane"), 'resize', lang.hitch(this, function (evt) {
+       console.log("aspect.after - resize");
+       displayTagCloud(wordsFrequencyList);
+       }), true);
+       */
+      displayTagCloud(wordsFrequencyList);
+
 
       if(!tagItemList) {
 
@@ -2178,7 +2221,6 @@ require([
         }
 
         tagItemList = new declare([OnDemandGrid, Selection, DijitRegistry])({
-          store: null,
           sort: "title",
           selectionMode: "extended",
           columns: tagItemColumns,
@@ -2196,11 +2238,15 @@ require([
 
       if(!tagsList) {
         tagsList = new declare([OnDemandList, Selection, DijitRegistry])({
-          sort: "id",
           selectionMode: "single",
-          renderRow: renderTagRow,
+          renderRow: function (object, options) {
+            var tagNode = put("div.tagItem.listItem");
+            put(tagNode, "span", object.tag);
+            put(tagNode, "span.tag-count", lang.replace("{count}", object));
+            return tagNode;
+          },
           loadingMessage: "Loading tags...",
-          noDataMessage: "User Tags"
+          noDataMessage: "Items Tags"
         }, "tagListPane");
         tagsList.startup();
         tagsList.on("dgrid-select", lang.hitch(this, tagSelected, true));
@@ -2213,14 +2259,65 @@ require([
         on(registry.byId('replaceTagBtn'), 'click', lang.hitch(this, replaceTagsFromSelection));
 
       }
-      var tagStore = new Observable(new Memory({data: tagItems}));
-      tagsList.set('store', tagStore);
-      tagsList.sort('tag', false);
+      var tagStore = new Observable(new Memory({data: wordsFrequencyList}));
+      tagsList.set("store", tagStore);
+      tagsList.sort("count", true);
 
       registry.byId('selectNoneBtn').set('disabled', true);
       registry.byId('addNewTagBtn').set('disabled', true);
       registry.byId('removeTagBtn').set('disabled', true);
       registry.byId('replaceTagBtn').set('disabled', true);
+
+    }
+
+    function displayTagCloud(wordsFrequencyList) {
+
+      var wordCloudNode = registry.byId("tagCloudPane").containerNode;
+      wordCloudNode.innerHTML = "";
+      var panelWidth = wordCloudNode.offsetWidth || 200;
+      var paneHeight = wordCloudNode.offsetHeight || 200;
+
+      var minFontSize = 5;
+      var maxFontSize = 25;
+      var maxCount = (wordsFrequencyList.length > 0) ? wordsFrequencyList[0].count : 0;
+
+      var fill = d3.scale.category20b();
+
+      function draw(words) {
+        d3.select("#" + wordCloudNode.id).append("svg")
+            .attr("width", panelWidth).attr("height", paneHeight)
+            .append("g").attr("transform", "translate(" + (panelWidth / 2 - (panelWidth * 0.01)) + "," + (paneHeight / 2 + 5) + ")")
+            .selectAll("text").data(words).enter().append("text")
+            .style("font-size", function (d) {
+              return d.size + "px";
+            }).style("font-family", "Impact")
+            .style("fill", function (d, i) {
+              return fill(i);
+            }).attr("text-anchor", "middle")
+            .attr("transform", function (d) {
+              return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            }).text(function (d) {
+              return d.text;
+            });
+      }
+
+      if(!tagCloud) {
+        tagCloud = d3.layout.cloud();
+      }
+      tagCloud.clear();
+
+      if(wordsFrequencyList.length > 0) {
+
+        tagCloud.size([panelWidth, paneHeight])
+            .words(wordsFrequencyList).padding(1)
+            .rotate(function (d) {
+              return 0; // ~~(Math.random()) * 90;
+            })
+            .font("Impact").spiral("archimedean") // "rectangular") //
+            .fontSize(function (d) {
+              return minFontSize + ((maxFontSize - minFontSize) * (d.size / maxCount));
+            }).on("end", draw).start();
+      }
 
     }
 
@@ -2701,66 +2798,6 @@ require([
       return deferred.promise;
     }
 
-    function displayTagCloud(items) {
-
-      //if(tagEditorActive) {
-
-        var tagList = [];
-        array.forEach(items, lang.hitch(this, function (item) {
-          array.forEach(item.tags, lang.hitch(this, function (tag) {
-            if(tag) {
-              if(tagList[tag]) {
-                tagList[tag].size = tagList[tag].size + 1;
-              } else {
-                tagList[tag] = {text: tag, size: 1};
-              }
-            }
-          }));
-        }));
-
-        var wordsFrequencyList = array.map(Object.keys(tagList), lang.hitch(this, function (tag) {
-          return tagList[tag];
-        }));
-
-
-        var wordCloudNode = registry.byId("tagCloudPane").containerNode;
-        wordCloudNode.innerHTML = "";
-        var panelWidth = wordCloudNode.offsetWidth || 200;
-        var paneHeight = wordCloudNode.offsetHeight || 200;
-
-        var fill = d3.scale.category20b();
-
-        d3.layout.cloud().size([panelWidth, paneHeight])
-            .words(wordsFrequencyList).padding(1)
-            .rotate(function (d) {
-              return 0; // ~~(Math.random()) * 90;
-            })
-            .font("Impact").spiral("archimedean")
-            .fontSize(function (d) {
-              return 11 * d.size;
-            }).on("end", draw).start();
-
-
-        function draw(words) {
-          d3.select("#" + wordCloudNode.id).append("svg")
-              .attr("width", panelWidth).attr("height", paneHeight)
-              .append("g").attr("transform", "translate(" + (panelWidth / 2 - (panelWidth * 0.01)) + "," + (paneHeight / 2 + 5) + ")")
-              .selectAll("text").data(words).enter().append("text")
-              .style("font-size", function (d) {
-                return d.size + "px";
-              }).style("font-family", "Impact")
-              .style("fill", function (d, i) {
-                return fill(i);
-              }).attr("text-anchor", "middle")
-              .attr("transform", function (d) {
-                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-              }).text(function (d) {
-                return d.text;
-              });
-        }
-
-      }
-    //}
 
   });
 });

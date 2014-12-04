@@ -327,9 +327,13 @@ html, body, #mainContainer {
 }
 
 #tagCloudPane {
-  border-top       : solid 1px #ccc;
   background-color : #fff !important;
   overflow         : hidden;
+}
+
+.exceeds-limit {
+  font-size : small;
+  color     : darkred;
 }
 
 .tagEditorDialogContentArea {
@@ -606,6 +610,10 @@ html, body, #mainContainer {
   background : url(./images/DeleteTag16.png) no-repeat 6px !important;
 }
 
+.tagCloudIcon {
+  background : url(./images/TagCloud16.png) no-repeat 6px !important;
+}
+
 .addNewTagIcon {
   background : url(./images/AddTag16.png) no-repeat 6px !important;
 }
@@ -850,6 +858,13 @@ html, body, #mainContainer {
   min-height : 100px;
   max-height : 600px;
   overflow   : auto;
+}
+
+.tag-count {
+  float        : right;
+  margin-right : 10px;
+  font-size    : smaller;
+  color        : gray;
 }
 
 .tags-list-pane {

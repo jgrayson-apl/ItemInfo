@@ -40,7 +40,7 @@ define([
         content: {
           f: "json"
         },
-        handleAs:"json"
+        handleAs: "json"
       });
     },
 
@@ -256,6 +256,8 @@ define([
     }
 
   });
+
+  ArcGISServerUtils.version = "0.1.0";
 
   return ArcGISServerUtils;
 });

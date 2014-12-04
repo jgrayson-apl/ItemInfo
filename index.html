@@ -114,6 +114,7 @@
               <textarea id="csvTextArea" data-dojo-type="dijit/form/Textarea" style="width:100%;"></textarea>
             </div>
           </div>
+          <div id="tagCloudPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title:'Tag Cloud',iconClass:'tagCloudIcon',gutters:false"></div>
           <div id="tagEditorPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Tag Editor',iconClass:'tagEditorIcon',gutters:false">
             <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'left',gutters:false,splitter:true,style:{width:'60%'}">
               <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
@@ -127,7 +128,7 @@
                 <div id="tagItemListPane"></div>
               </div>
             </div>
-            <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
+            <div id="tagEditorActionPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center',gutters:false">
               <div data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top',style:{padding:'10px',fontSize:'smaller'}">
                 <label style="font-weight: bolder;">Tags:</label>
                 <!--<div id="splitTagBtn" data-dojo-type="dijit/form/Button" data-dojo-props="disabled:true,iconClass:'splitTagIcon',label:'Split Tags',title:'Split tags'"></div>-->
@@ -137,7 +138,7 @@
               <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
                 <div id="tagListPane"></div>
               </div>
-              <div id="tagCloudPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom',style:{height:'40%'}"></div>
+              <!--<div id="tagCloudPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom',splitter:true,style:{height:'40%'}"></div>-->
             </div>
           </div>
           <div id="registerServicesPane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="title:'Register Services',iconClass:'registerServicesIcon',gutters:false">

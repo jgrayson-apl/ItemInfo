@@ -197,6 +197,8 @@
       return cloud;
     };
 
+    cloud.clear = clear;
+
     return d3.rebind(cloud, event, "on");
   }
 
@@ -411,6 +413,10 @@
       };
   c.fillStyle = c.strokeStyle = "red";
   c.textAlign = "center";
+
+  function clear() {
+    c.clearRect(0, 0, canvas.width, canvas.height);
+  }
 
   exports.cloud = cloud;
 })(typeof exports === "undefined" ? d3.layout || (d3.layout = {}) : exports);
