@@ -17,7 +17,7 @@ Check it out live here: http://maps.esri.com/AGSJS_Demos/templates/ItemInfo/inde
  * The demo is not intended to be used in production environments.
 
 
-### Version
+#### Version
  * 0.0.1
 
 
