@@ -1,3 +1,19 @@
+/*
+ | Copyright 2014 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
+
 require([
   "dojo/ready",
   "dojo/_base/declare",
@@ -54,7 +70,12 @@ require([
   "apl/ArcGISServerUtils",
   "apl/ArcGISOnlineUtils",
   "esri/IdentityManager"
-], function (ready, declare, lang, connect, array, aspect, query, json, on, mouse, cookie, dom, domConstruct, domClass, domStyle, number, string, Deferred, all, ObjectStore, MemoryStore, Observable, List, Grid, OnDemandList, OnDemandGrid, ColumnHider, Selection, selector, DijitRegistry, put, locale, TitlePane, Dialog, popup, TooltipDialog, Menu, MenuItem, Button, TextBox, NumberTextBox, DateTextBox, Select, registry, esriRequest, esriKernel, esriConfig, urlUtils, domUtils, arcgisUtils, esriPortal, ArcGISSearchUtils, ArcGISServerUtils, ArcGISOnlineUtils, IdentityManager) {
+], function (ready, declare, lang, connect, array, aspect, query, json, on, mouse, cookie, dom, domConstruct, domClass,
+             domStyle, number, string, Deferred, all, ObjectStore, MemoryStore, Observable, List, Grid, OnDemandList,
+             OnDemandGrid, ColumnHider, Selection, selector, DijitRegistry, put, locale, TitlePane, Dialog, popup,
+             TooltipDialog, Menu, MenuItem, Button, TextBox, NumberTextBox, DateTextBox, Select, registry, esriRequest,
+             esriKernel, esriConfig, urlUtils, domUtils, arcgisUtils, esriPortal, ArcGISSearchUtils, ArcGISServerUtils,
+             ArcGISOnlineUtils, IdentityManager) {
 
   var portalUser = null;
   var sourceFoldersList = null;
@@ -87,7 +108,7 @@ require([
 
   //
   // WE NEED CASE INSENSITIVE SORTS...
-  //   http://stackoverflow.com/questions/26783489/non-case-sensitive-sorting-in-dojo-dgrid
+  //   Adapted from http://stackoverflow.com/questions/26783489/non-case-sensitive-sorting-in-dojo-dgrid
   //
   var Memory = declare(MemoryStore, {
     query: function (query, queryOptions) {
@@ -103,6 +124,7 @@ require([
               if(typeof aValue == "string") {
                 result = aValue.toLowerCase() > bValue.toLowerCase() ? 1 : -1;
               } else {
+                // allow for comparison of numeric values
                 result = aValue > bValue ? 1 : -1;
               }
               return result * (sort[i].descending ? -1 : 1);
@@ -985,6 +1007,10 @@ require([
             }, put(parameterInputsNode, 'div'));
             dateInput.startup();
             createClearImg(parameterInputsNode, dateInput);
+            put(parameterInputsNode, 'span.actionToday', {
+              innerHTML: "today",
+              onclick: function () { dateInput.set("value", (new Date()))}
+            });
             parameterInputs.push(dateInput);
 
             if(parameter.range) {
@@ -998,6 +1024,10 @@ require([
               }, put(parameterInputsNode, 'div'));
               dateInput2.startup();
               createClearImg(parameterInputsNode, dateInput2);
+              put(parameterInputsNode, 'span.actionToday', {
+                innerHTML: "today",
+                onclick: function () { dateInput2.set("value", (new Date()))}
+              });
               parameterInputs.push(dateInput2);
             }
             break;
@@ -1174,8 +1204,9 @@ require([
         queryCountDeferred = portalUser.portal.queryItems(queryParams).then(lang.hitch(this, function (response) {
           queryCountDeferred = null;
 
-          var exceedsLimit = ((response.total < 1) || (response.total > maxItemCount));
-          registry.byId('applySearchBtn').set('disabled', exceedsLimit);
+          var noResults = (response.total < 1);
+          var exceedsLimit = (response.total > maxItemCount);
+          registry.byId('applySearchBtn').set('disabled', noResults || exceedsLimit);
 
           dom.byId('searchQueryResultCount').innerHTML = lang.replace("{0} items found", [number.format(response.total)]);
           dom.byId('searchQueryResultCount').innerHTML += exceedsLimit ? "<span class='exceeds-limit'> (exceeds app limit of " + number.format(maxItemCount) + ")</span>" : "";

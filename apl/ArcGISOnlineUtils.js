@@ -1,3 +1,19 @@
+/*
+ | Copyright 2014 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
+
 define([
   "dojo/_base/declare",
   "dojo/Evented",
@@ -543,4 +559,44 @@ define([
   return ArcGISOnlineUtils;
 });
 
+/*
+var sampleFeatureLayerItem = {
+  "id": "67c933046df34b3ba655a39d8a7feb7b",
+  "owner": "jgrayson",
+  "created": 1419019896000,
+  "modified": 1419019897000,
+  "guid": null,
+  "name": null,
+  "title": "OpenData - Assisted Living Facilities",
+  "type": "Feature Service",
+  "typeKeywords": ["ArcGIS Server", "Data", "Feature Access", "Feature Service", "Service", "Singlelayer"],
+  "description": null,
+  "tags": ["register_test"],
+  "snippet": "OpenData - Assisted Living Facilities",
+  "thumbnail": "thumbnail/ago_downloaded.png",
+  "documentation": null,
+  "extent": [[-80.4058, 25.9736], [-80.0868, 26.322]],
+  "spatialReference": null,
+  "accessInformation": null,
+  "licenseInfo": null,
+  "culture": "en-us",
+  "properties": null,
+  "url": "http://gis.broward.org/arcgis/rest/services/OpenData/OpenData/MapServer",
+  "access": "private",
+  "size": 71,
+  "appCategories": [],
+  "industries": [],
+  "languages": [],
+  "largeThumbnail": null,
+  "banner": null,
+  "screenshots": [],
+  "listed": false,
+  "ownerFolder": "d0175183418f46139beeffefecc28288",
+  "protected": false,
+  "numComments": 0,
+  "numRatings": 0,
+  "avgRating": 0,
+  "numViews": 0
+};
+*/
 

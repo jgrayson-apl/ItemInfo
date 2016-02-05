@@ -49,6 +49,16 @@ html, body, #mainContainer {
   cursor         : pointer;
 }
 
+.actionToday {
+  cursor    : pointer;
+  font-size : smaller;
+  color     : blue;
+}
+
+.actionToday:hover {
+  text-decoration : underline;
+}
+
 #topToolbar {
   height         : 20px;
   padding        : 15px 15px 15px 50px;
@@ -687,7 +697,7 @@ html, body, #mainContainer {
   background : url(./images/WebMap.png) no-repeat 4px;
 }
 
-.iconExplorerMap, .iconOperationView, .iconMapPackage, .iconMapDocument {
+.iconExplorerMap, .iconOperationView, .iconMapPackage, .iconMapDocument, .iconTilePackage, .iconGeoprocessingPackage {
   background : url(./images/MapPackage.png) no-repeat 4px;
 }
 
