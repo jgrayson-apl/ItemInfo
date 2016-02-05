@@ -1,8 +1,8 @@
 
-### Concept:
+### Concept
  This is just a *demo*, used to show how some of our APIs can be used to provide additional functionality.
 
-### Workflow:
+### Workflow
   1. Select items based on folder, tags, group, or search.
   2. Filter based on item title and type.
   3. Display items in different ways by selecting one of the 'Views'.
@@ -12,9 +12,13 @@
 Check it out live here: http://maps.esri.com/AGSJS_Demos/templates/ItemInfo/index.html
 
 
-#### NOTE:
+#### NOTE
  * Developers may use relevant parts of this demo as starting places for their own work.
  * The demo is not intended to be used in production environments.
+
+
+### Version
+ * 0.0.1
 
 
 > Copyright 2014 Esri
