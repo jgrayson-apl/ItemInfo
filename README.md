@@ -1,6 +1,6 @@
 
 ### Concept:
-    This is just a *demo*, used to show how some of our APIs can be used to provide additional functionality.
+ This is just a *demo*, used to show how some of our APIs can be used to provide additional functionality.
 
 ### Workflow:
   1. Select items based on folder, tags, group, or search.
@@ -10,12 +10,10 @@
 
 Check it out live here: http://maps.esri.com/AGSJS_Demos/templates/ItemInfo/index.html
 
-### NOTE:
+#### NOTE:
  * Developers may use relevant parts of this demo as starting places for their own work.
- * The demo as-is is not intended to be used in production environments.
+ * The demo is not intended to be used in production environments.
 
-
----
 
 > Copyright 2014 Esri
 >
@@ -30,5 +28,3 @@ Check it out live here: http://maps.esri.com/AGSJS_Demos/templates/ItemInfo/inde
 > WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 > See the License for the specific language governing permissions and
 > limitations under the License.
-
----
