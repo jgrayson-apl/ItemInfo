@@ -1,10 +1,6 @@
 
-
-## This is just a **demo** to show how some of our APIs can be used to provide additional functionality.
-
-
 ### Concept:
-  Provide a ‘Tag Editor’ for an ArcGIS Online Organization.
+    This is just a *demo*, used to show how some of our APIs can be used to provide additional functionality.
 
 ### Workflow:
   1. Select items based on folder, tags, group, or search.
@@ -14,8 +10,12 @@
 
 Check it out live here: http://maps.esri.com/AGSJS_Demos/templates/ItemInfo/index.html
 
+### NOTE:
+ * Developers may use relevant parts of this demo as starting places for their own work.
+ * The demo as-is is not intended to be used in production environments.
 
 
+---
 
 > Copyright 2014 Esri
 >
@@ -30,3 +30,5 @@ Check it out live here: http://maps.esri.com/AGSJS_Demos/templates/ItemInfo/inde
 > WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 > See the License for the specific language governing permissions and
 > limitations under the License.
+
+---
