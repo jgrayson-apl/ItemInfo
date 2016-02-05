@@ -5,10 +5,12 @@
 ### Workflow:
   1. Select items based on folder, tags, group, or search.
   2. Filter based on item title and type.
+  3. Display items in different ways by selecting one of the 'Views'.
   3. Use ‘Tag Editor’ to Add, Replace, or Remove multiple tags from multiple items.
-
+  4. Use 'Register Services' to add ArcGIS Server services as new items.
 
 Check it out live here: http://maps.esri.com/AGSJS_Demos/templates/ItemInfo/index.html
+
 
 #### NOTE:
  * Developers may use relevant parts of this demo as starting places for their own work.
