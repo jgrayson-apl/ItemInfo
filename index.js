@@ -103,7 +103,7 @@ require([
   var maxItemCount = 2500;
 
   var portalUrlList = [
-    document.location.protocol + "//www.arcgis.com"
+    window.location.protocol + "//www.arcgis.com"
   ];
 
   //
@@ -121,7 +121,7 @@ require([
             var bValue = b[sort[i].attribute];
             if(aValue !== bValue) {
               var result = 0;
-              if(typeof aValue == "string") {
+              if(typeof aValue === "string") {
                 result = aValue.toLowerCase() > bValue.toLowerCase() ? 1 : -1;
               } else {
                 // allow for comparison of numeric values
@@ -140,7 +140,7 @@ require([
   ready(function () {
 
     // PROXY URL //
-    esriConfig.defaults.io.proxyUrl = "./resources/proxy.ashx";
+    esriConfig.defaults.io.proxyUrl = "https://maps.esri.com/proxy/DotNET/proxy.ashx";
 
     // SEARCH UTILS //
     arcGISSearchUtils = new ArcGISSearchUtils();
