@@ -82,12 +82,12 @@ html, body, #mainContainer {
 }
 
 #typeContainer {
-  width  : 450px;
-  margin : 6px 3px 6px 6px;
+  width : 450px;
+  /*margin : 6px 3px 6px 6px;*/
 }
 
 #listContainer {
-  margin : 6px 6px 6px 3px;
+  /*margin : 6px 6px 6px 3px;*/
 }
 
 #typeContainer, #listContainer {
@@ -145,28 +145,28 @@ html, body, #mainContainer {
 }
 
 .galleryItem {
-  float         : left;
-  margin        : 10px;
-  padding       : 10px;
-  width         : 120px;
-  height        : 110px;
+  float      : left;
+  margin     : 5px;
+  padding    : 10px;
+  width      : 120px;
+  height     : 110px;
   /*border-radius : 6px;*/
-  box-shadow    : 0 0 3px silver;
+  box-shadow : 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .galleryItem:hover {
   cursor     : pointer;
-  box-shadow : 0 0 15px #444;
+  box-shadow : 0 1px 10px rgba(0, 0, 0, 0.6);
 }
 
 .galleryItemTitle {
-  height              : 1.5em;
-  font-size           : smaller;
-  font-weight         : bolder;
-  color               : #666;
-  white-space         : nowrap;
-  overflow            : hidden;
-  text-overflow       : ellipsis;
+  height        : 1.5em;
+  font-size     : smaller;
+  font-weight   : bolder;
+  color         : #666;
+  white-space   : nowrap;
+  overflow      : hidden;
+  text-overflow : ellipsis;
   /*padding-left        : 20px;*/
   /*background-position : 0 0 !important;*/
 }
@@ -183,20 +183,20 @@ html, body, #mainContainer {
 */
 
 .galleryItemThumbnail {
-  width         : 100px;
-  height        : 66px;
-  margin        : 5px;
-  padding       : 4px;
+  width      : 100px;
+  height     : 66px;
+  margin     : 5px;
+  padding    : 4px;
   /*border-radius : 4px;*/
-  box-shadow    : 0 0 2px #444;
+  box-shadow : 0 0 2px #444;
 }
 
 #sourceItemsCount {
-  padding       : 8px;
-  color         : #555;
-  font-size     : smaller;
-  font-style    : italic;
-  font-weight   : bolder;
+  padding     : 8px;
+  color       : #555;
+  font-size   : smaller;
+  font-style  : italic;
+  font-weight : bolder;
   /*border-radius : 6px;*/
 }
 
@@ -293,9 +293,9 @@ html, body, #mainContainer {
 }
 
 .dijitToggleButtonChecked .dijitButtonNode {
-  font-weight   : bolder !important;
-  font-style    : italic;
-  border-color  : silver !important;
+  font-weight  : bolder !important;
+  font-style   : italic;
+  border-color : silver !important;
   /*border-radius : 10px !important;*/
 }
 
@@ -685,9 +685,9 @@ html, body, #mainContainer {
   border     : solid 1px silver;
 }
 
-.item-icon{
-  padding: 0 10px 0 5px;
-  vertical-align: middle;
+.item-icon {
+  padding        : 0 10px 0 5px;
+  vertical-align : middle;
 }
 
 /*.iconItem {
@@ -943,10 +943,10 @@ html, body, #mainContainer {
 }
 
 .esriSignInDialog .dijitDialogTitleBar {
-  padding       : 5px !important;
-  border        : none !important;
-  background    : #555 none !important;
-  box-shadow    : inset 0 0 5px silver;
+  padding    : 5px !important;
+  border     : none !important;
+  background : #555 none !important;
+  box-shadow : inset 0 0 5px silver;
   /*border-radius : 4px 4px 0 0;*/
 }
 

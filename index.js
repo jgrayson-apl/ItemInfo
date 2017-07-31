@@ -1456,6 +1456,12 @@ require([
       });
       columns.push({
         needsQuotes: true,
+        label: "Display Name",
+        field: "displayName",
+        hidden: true
+      });
+      columns.push({
+        needsQuotes: true,
         label: "Type",
         field: "type",
         hidden: true
@@ -1641,11 +1647,13 @@ require([
         if(array.indexOf(itemTypeNames, result.type) === -1) {
           itemTypeNames.push(result.type);
 
-          //var itemClass = 'icon' + result.type.replace(/ /g, '');
+          var typeNode = put("div");
+          put(typeNode, "img.item-icon", { src: result.iconUrl });
+          put(typeNode, "span", result.type);
+
           itemTypes.push({
             id: result.type,
-            label: lang.replace("<div><img src:{iconUrl}>{type}</div>", result)
-            //label: lang.replace("<div class='iconItem {0}'>{1}</div>", [itemClass, result.type])
+            label: typeNode.outerHTML
           });
         }
       });
@@ -2077,9 +2085,9 @@ require([
           })
         });
 
-        var titleNode = put(galleryItemNode,"div.galleryItemTitle");
+        var titleNode = put(galleryItemNode, "div.galleryItemTitle");
         put(titleNode, "img.item-icon", { src: result.iconUrl });
-        put(titleNode, "span", result.title  || "[No Title]");
+        put(titleNode, "span", result.title || "[No Title]");
 
         //put(galleryItemNode, "div.galleryItemTitle.icon" + itemClass, result.title || "[No Title]");
         put(galleryItemNode, "img.galleryItemThumbnail", { src: result.thumbnailUrl || "./images/no_preview.gif" });
