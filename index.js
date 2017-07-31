@@ -205,7 +205,7 @@ require([
          *
          */
 
-          // FOLDERS LIST //
+        // FOLDERS LIST //
         sourceFoldersList = declare([OnDemandList, Selection, DijitRegistry])({
           store: new Observable(new Memory({
             data: []
@@ -367,7 +367,7 @@ require([
         on(dom.byId('expandoImage'), 'click', lang.hitch(this, function () {
           var expandoImage = dom.byId('expandoImage');
           domClass.toggle(dom.byId('expandoImage'), "expand");
-          var newSize = (domClass.contains(expandoImage, "expand")) ? {w: 70} : {w: 450};
+          var newSize = (domClass.contains(expandoImage, "expand")) ? { w: 70 } : { w: 450 };
           registry.byId('typeContainer').resize(newSize);
           registry.byId('mainContainer').layout();
         }));
@@ -397,7 +397,7 @@ require([
         portal.signIn().then(lang.hitch(this, function (loggedInUser) {
           // PORTAL USER //
           portalUser = loggedInUser;
-          arcGISOnlineUtils = new ArcGISOnlineUtils({portalUser: portalUser});
+          arcGISOnlineUtils = new ArcGISOnlineUtils({ portalUser: portalUser });
 
           dom.byId('loggedInUser').innerHTML = portalUser.fullName;
 
@@ -437,7 +437,7 @@ require([
             getOrgTags().then(lang.hitch(this, function (tagItems) {
               var tagStore = new Observable(new Memory({
                 data: array.map(tagItems, function (tagItem) {
-                  return {id: tagItem, tag: tagItem};
+                  return { id: tagItem, tag: tagItem };
                 })
               }));
               // SET LISTS STORE //
@@ -452,7 +452,7 @@ require([
             portalUser.getTags().then(function (tagItems) {
               var tagStore = new Observable(new Memory({
                 data: array.map(tagItems, function (tagItem) {
-                  return {id: tagItem.tag, tag: tagItem.tag};
+                  return { id: tagItem.tag, tag: tagItem.tag };
                 })
               }));
               // SET LISTS STORE //
@@ -632,7 +632,7 @@ require([
         if(serverListCookie) {
           serverList = json.parse(serverListCookie);
         } else {
-          serverList = {servers: []};
+          serverList = { servers: [] };
           saveServerList(serverList);
         }
       }
@@ -645,7 +645,7 @@ require([
      */
     function saveServerList(serverList) {
       if(cookie.isSupported()) {
-        cookie('register-services-config', json.stringify(serverList), {expires: 360});
+        cookie('register-services-config', json.stringify(serverList), { expires: 360 });
       }
     }
 
@@ -654,7 +654,7 @@ require([
      */
     function clearServerList() {
       if(cookie.isSupported()) {
-        cookie('register-services-config', '...deleting....', {expires: -1});
+        cookie('register-services-config', '...deleting....', { expires: -1 });
       }
     }
 
@@ -766,7 +766,7 @@ require([
         this.getServicesDeferred = null;
       }
 
-      var emptyServicesStore = new Observable(new Memory({data: []}));
+      var emptyServicesStore = new Observable(new Memory({ data: [] }));
       serverServicesList.set('store', emptyServicesStore);
 
       // PORTAL FOLDER //
@@ -1009,7 +1009,9 @@ require([
             createClearImg(parameterInputsNode, dateInput);
             put(parameterInputsNode, 'span.actionToday', {
               innerHTML: "today",
-              onclick: function () { dateInput.set("value", (new Date()))}
+              onclick: function () {
+                dateInput.set("value", (new Date()))
+              }
             });
             parameterInputs.push(dateInput);
 
@@ -1026,7 +1028,9 @@ require([
               createClearImg(parameterInputsNode, dateInput2);
               put(parameterInputsNode, 'span.actionToday', {
                 innerHTML: "today",
-                onclick: function () { dateInput2.set("value", (new Date()))}
+                onclick: function () {
+                  dateInput2.set("value", (new Date()))
+                }
               });
               parameterInputs.push(dateInput2);
             }
@@ -1051,7 +1055,7 @@ require([
               "class": "parameterInput parameter_" + parameter.id,
               parameterName: parameter.id,
               options: array.map(parameter.list, function (listItem) {
-                return {label: listItem, value: listItem};
+                return { label: listItem, value: listItem };
               })
             }, put(parameterInputsNode, 'div'));
             selectInput.startup();
@@ -1103,7 +1107,7 @@ require([
         if(searchParameterListCookie) {
           searchParameterList = json.parse(searchParameterListCookie);
         } else {
-          searchParameterList = {searches: {}};
+          searchParameterList = { searches: {} };
           saveServerList(searchParameterList);
         }
       }
@@ -1116,7 +1120,7 @@ require([
      */
     function saveSearchParameterList(searchParameterList) {
       if(cookie.isSupported()) {
-        cookie('search-parameters-config', json.stringify(searchParameterList), {expires: 360});
+        cookie('search-parameters-config', json.stringify(searchParameterList), { expires: 360 });
       }
     }
 
@@ -1125,7 +1129,7 @@ require([
      */
     function clearSearchParameterList() {
       if(cookie.isSupported()) {
-        cookie('search-parameters-config', '...deleting....', {expires: -1});
+        cookie('search-parameters-config', '...deleting....', { expires: -1 });
       }
     }
 
@@ -1227,7 +1231,7 @@ require([
         sourceTagsList.clearSelection();
         domClass.add('sourceItemsCount', 'searching');
         dom.byId('sourceItemsCount').innerHTML = 'Searching...';
-        var emptyStore = new Observable(new Memory({data: []}));
+        var emptyStore = new Observable(new Memory({ data: [] }));
         sourceItemList.set('store', emptyStore);
         searchPortalItemsByQuery(searchQuery).then(updateSourceItemList);
       }
@@ -1389,6 +1393,9 @@ require([
     }
 
     function renderServiceItemName(object, value, node, options) {
+
+      console.info("renderServiceItemName: ", object);
+
       return put(lang.replace("div.iconItem.icon{type}", object), value);
     }
 
@@ -1549,7 +1556,7 @@ require([
     // RENDER ITEM THUMBNAIL //
     function renderItemThumbnail(object, value, node, options) {
 
-      return put("img.itemThumbnail", {src: value || "./images/no_preview.gif"});
+      return put("img.itemThumbnail", { src: value || "./images/no_preview.gif" });
 
       /*var thumbnailImage =  put("img.itemThumbnail");
        getImage(value).then(lang.hitch(this, function (evt) {
@@ -1579,7 +1586,7 @@ require([
 
     // RENDER ITEM DESCRIPTION //
     function renderItemDescription(object, value, node, options) {
-      return put("div.descNode", {innerHTML: value || "[No Description]"});
+      return put("div.descNode", { innerHTML: value || "[No Description]" });
     }
 
 
@@ -1661,8 +1668,8 @@ require([
       sourceTagsList.clearSelection();
       sourceFoldersList.clearSelection();
 
-      var emptyStore = new Observable(new Memory({data: []}));
-      sourceItemList.set('store', emptyStore, {}, {count: maxItemCount, sort: 'title'});
+      var emptyStore = new Observable(new Memory({ data: [] }));
+      sourceItemList.set('store', emptyStore, {}, { count: maxItemCount, sort: 'title' });
       registry.byId('sourceItemGallery').set('content', "");
       registry.byId('csvTextArea').set('value', "");
 
@@ -1697,7 +1704,7 @@ require([
 
       var itemDetailsNode = put('div');
       put(itemDetailsNode, 'label', "Item ID: ");
-      put(itemDetailsNode, 'input', {value: row.data.id});
+      put(itemDetailsNode, 'input', { value: row.data.id });
 
       var myTooltipDialog = new TooltipDialog({
         style: "width: 300px;",
@@ -1982,7 +1989,7 @@ require([
        */
 
 
-      var queryParameters = nextQueryParams || {q: lang.replace('orgid:{0}', [portalUser.portal.id]), num: 100};
+      var queryParameters = nextQueryParams || { q: lang.replace('orgid:{0}', [portalUser.portal.id]), num: 100 };
 
       portalUser.portal.queryUsers(queryParameters).then(lang.hitch(this, function (response) {
 
@@ -2024,7 +2031,7 @@ require([
     function updateSourceItemList(store) {
       registry.byId('sourceItemsFilterInput').set('value', "");
       updateTypeList(store.data);
-      sourceItemList.set('store', store, {}, {count: maxItemCount, sort: 'title'});
+      sourceItemList.set('store', store, {}, { count: maxItemCount, sort: 'title' });
       domClass.remove('sourceItemsCount', 'searching');
     }
 
@@ -2045,7 +2052,7 @@ require([
 
       // GET LIST OF ALL ITEMS DIRECTLY FROM THE   //
       // STORE BUT BASED ON CURRENT QUERY AND SORT //
-      var allResults = sourceItemList.store.query(sourceItemList.query, {sort: sourceItemList._getSort()});
+      var allResults = sourceItemList.store.query(sourceItemList.query, { sort: sourceItemList._getSort() });
       updateGalleryView(allResults);
       updateTagEditor(allResults);
       exportItemList(allResults);
@@ -2067,7 +2074,7 @@ require([
         });
 
         put(galleryItemNode, "div.galleryItemTitle.icon" + itemClass, result.title || "[No Title]");
-        put(galleryItemNode, "img.galleryItemThumbnail", {src: result.thumbnailUrl || "./images/no_preview.gif"});
+        put(galleryItemNode, "img.galleryItemThumbnail", { src: result.thumbnailUrl || "./images/no_preview.gif" });
 
       }));
 
@@ -2086,7 +2093,7 @@ require([
     function exportItemList(allResults) {
 
       if(!allResults) {
-        allResults = sourceItemList.store.query(sourceItemList.query, {sort: sourceItemList._getSort()});
+        allResults = sourceItemList.store.query(sourceItemList.query, { sort: sourceItemList._getSort() });
       }
 
       // CREATE LIST OF COLUMN TEMPLATES //
@@ -2169,7 +2176,7 @@ require([
         countsItemList.startup();
         countsItemList.on(".dgrid-row:click", lang.partial(displayItemInAGOL, countsItemList));
       }
-      var itemStore = new Observable(new Memory({data: allResults}));
+      var itemStore = new Observable(new Memory({ data: allResults }));
       countsItemList.set('store', itemStore);
 
       //registry.byId('applySyncCountsBtn').set('disabled', true);
@@ -2185,9 +2192,9 @@ require([
       if(value != null) {
         var percent = (value * 100.0);
         if(value < 1.0) {
-          return put("div.lessThanOne", {innerHTML: lang.replace("<b>{0}</b>%", [number.format(percent, {places: 2})])});
+          return put("div.lessThanOne", { innerHTML: lang.replace("<b>{0}</b>%", [number.format(percent, { places: 2 })]) });
         } else {
-          return put("div.atLeastOne", lang.replace("{0}%", [number.format(percent, {places: 0})]));
+          return put("div.atLeastOne", lang.replace("{0}%", [number.format(percent, { places: 0 })]));
         }
       } else {
         return put("div");
@@ -2262,7 +2269,7 @@ require([
       array.forEach(allResults, lang.hitch(this, function (item) {
         array.forEach(item.tags, lang.hitch(this, function (tag) {
           if(!tagList.hasOwnProperty(tag)) {
-            tagList[tag] = {id: tag, tag: tag, text: tag, size: 1, count: 1};
+            tagList[tag] = { id: tag, tag: tag, text: tag, size: 1, count: 1 };
           } else {
             ++tagList[tag].size;
             ++tagList[tag].count;
@@ -2323,7 +2330,7 @@ require([
         tagItemList.on("dgrid-deselect", lang.hitch(this, tagItemSelected));
         tagItemList.on(".dgrid-row:dblclick", lang.hitch(this, editItemTags));
       }
-      var itemStore = new Observable(new Memory({data: allResults}));
+      var itemStore = new Observable(new Memory({ data: allResults }));
       tagItemList.set('store', itemStore);
 
 
@@ -2350,7 +2357,7 @@ require([
         on(registry.byId('replaceTagBtn'), 'click', lang.hitch(this, replaceTagsFromSelection));
 
       }
-      var tagStore = new Observable(new Memory({data: wordsFrequencyList}));
+      var tagStore = new Observable(new Memory({ data: wordsFrequencyList }));
       tagsList.set("store", tagStore);
       tagsList.sort("count", true);
 
@@ -2388,8 +2395,8 @@ require([
             .attr("transform", function (d) {
               return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             }).text(function (d) {
-              return d.text;
-            });
+          return d.text;
+        });
       }
 
       if(!tagCloud) {
@@ -2468,7 +2475,7 @@ require([
       var createItemTagsRow = lang.hitch(this, function (tagsListPane, tags) {
         array.forEach(tags, lang.hitch(this, function (tag) {
           var tagItemNode = put(tagsListPane, "div.tag-list-node.tagItem");
-          var clearTagNode = put(tagItemNode, "span.tag-list-clear.removeTagIcon", {title: "Remove Tag"});
+          var clearTagNode = put(tagItemNode, "span.tag-list-clear.removeTagIcon", { title: "Remove Tag" });
           var tagNode = put(tagItemNode, "div.tag-list-item", tag);
           on(tagNode, "click", lang.hitch(this, onTagClick, tagNode));
           on(clearTagNode, "click", lang.hitch(this, onClearClick, tagItemNode, tagNode));
@@ -2545,16 +2552,16 @@ require([
           // ADD TAGS //
           array.forEach(addedTags, lang.hitch(this, function (addedTag) {
             if(!tagsList.store.get(addedTag)) {
-              tagsList.store.add({id: addedTag, tag: addedTag});
+              tagsList.store.add({ id: addedTag, tag: addedTag });
             }
             if(!sourceTagsList.store.get(addedTag)) {
-              sourceTagsList.store.add({id: addedTag, tag: addedTag});
+              sourceTagsList.store.add({ id: addedTag, tag: addedTag });
             }
           }));
         }));
 
       }));
-      var cancelBtn = new Button({label: "Cancel"}, put(actionBarNode, 'div'));
+      var cancelBtn = new Button({ label: "Cancel" }, put(actionBarNode, 'div'));
       cancelBtn.on('click', lang.hitch(this, function () {
         editTagsDialog.hide();
       }));
@@ -2603,7 +2610,7 @@ require([
         if(tagItemList) {
           tagItemList.clearSelection();
           var selectedTag = evt.rows[0].data.tag;
-          var results = tagItemList.store.query(tagItemList.query, {sort: tagItemList._getSort()});
+          var results = tagItemList.store.query(tagItemList.query, { sort: tagItemList._getSort() });
           array.forEach(results, lang.hitch(this, function (item) {
             var hasTag = (array.indexOf(item.tags, selectedTag) > -1);
             if(hasTag) {
@@ -2711,10 +2718,10 @@ require([
           removeFromSourceTagList(selectedTagItem.id);
 
           if(!tagsList.store.get(newTag)) {
-            tagsList.store.add({id: newTag, tag: newTag});
+            tagsList.store.add({ id: newTag, tag: newTag });
           }
           if(!sourceTagsList.store.get(newTag)) {
-            sourceTagsList.store.add({id: newTag, tag: newTag});
+            sourceTagsList.store.add({ id: newTag, tag: newTag });
           }
           registry.byId('removeTagBtn').set('disabled', true);
           registry.byId('replaceTagBtn').set('disabled', true);
@@ -2728,7 +2735,7 @@ require([
     function removeTagsFromSelection() {
       var selectedTagItem = getSelectedTag();
 
-      var results = tagItemList.store.query(tagItemList.query, {sort: tagItemList._getSort()});
+      var results = tagItemList.store.query(tagItemList.query, { sort: tagItemList._getSort() });
       var updateDeferredArray = [];
       array.forEach(results, lang.hitch(this, function (item) {
         var tagIndex = array.indexOf(item.tags, selectedTagItem.tag);
@@ -2790,10 +2797,10 @@ require([
           //console.log('addTagToSelection.all: ');
           array.forEach(newTags, lang.hitch(this, function (newTag) {
             if(!tagsList.store.get(newTag)) {
-              tagsList.store.add({id: newTag, tag: newTag});
+              tagsList.store.add({ id: newTag, tag: newTag });
             }
             if(!sourceTagsList.store.get(newTag)) {
-              sourceTagsList.store.add({id: newTag, tag: newTag});
+              sourceTagsList.store.add({ id: newTag, tag: newTag });
             }
           }));
         }));
@@ -2870,7 +2877,7 @@ require([
         });
         deferred.resolve(cleanedTags);
       }));
-      var cancelBtn = new Button({label: "Cancel"}, put(actionBarNode, 'div'));
+      var cancelBtn = new Button({ label: "Cancel" }, put(actionBarNode, 'div'));
       cancelBtn.on('click', lang.hitch(this, function () {
         addTagDialog.hide();
         deferred.reject();
