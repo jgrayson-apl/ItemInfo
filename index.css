@@ -167,8 +167,8 @@ html, body, #mainContainer {
   white-space         : nowrap;
   overflow            : hidden;
   text-overflow       : ellipsis;
-  padding-left        : 20px;
-  background-position : 0 0 !important;
+  /*padding-left        : 20px;*/
+  /*background-position : 0 0 !important;*/
 }
 
 /*
@@ -685,7 +685,12 @@ html, body, #mainContainer {
   border     : solid 1px silver;
 }
 
-.iconItem {
+.item-icon{
+  padding: 0 10px 0 5px;
+  vertical-align: middle;
+}
+
+/*.iconItem {
   padding-left : 24px !important;
 }
 
@@ -771,7 +776,7 @@ html, body, #mainContainer {
 
 .iconMobileServer {
   background : url(./images/ServiceMobile16.png) no-repeat 4px;
-}
+}*/
 
 .error {
   color : red;

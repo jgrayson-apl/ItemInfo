@@ -1393,10 +1393,11 @@ require([
     }
 
     function renderServiceItemName(object, value, node, options) {
-
-      console.info("renderServiceItemName: ", object);
-
-      return put(lang.replace("div.iconItem.icon{type}", object), value);
+      //return put(lang.replace("div.iconItem.icon{type}", object), value);
+      var nameNode = put("div");
+      put(nameNode, "img.item-icon", { src: object.iconUrl });
+      put(nameNode, "span", value || "[No Title]");
+      return nameNode;
     }
 
     // GET ARRAY OF COLUMNS //
@@ -1580,8 +1581,10 @@ require([
 
     // RENDER ITEM TITLE TO SHOW TYPE ICON //
     function renderItemTitle(object, value, node, options) {
-      var itemClass = '.icon' + object.type.replace(/ /g, '');
-      return put("div.iconItem." + itemClass, value || "[No Title]");
+      var titleNode = put("div");
+      put(titleNode, "img.item-icon", { src: object.iconUrl });
+      put(titleNode, "span", value || "[No Title]");
+      return titleNode;
     }
 
     // RENDER ITEM DESCRIPTION //
@@ -1638,10 +1641,11 @@ require([
         if(array.indexOf(itemTypeNames, result.type) === -1) {
           itemTypeNames.push(result.type);
 
-          var itemClass = 'icon' + result.type.replace(/ /g, '');
+          //var itemClass = 'icon' + result.type.replace(/ /g, '');
           itemTypes.push({
             id: result.type,
-            label: lang.replace("<div class='iconItem {0}'>{1}</div>", [itemClass, result.type])
+            label: lang.replace("<div><img src:{iconUrl}>{type}</div>", result)
+            //label: lang.replace("<div class='iconItem {0}'>{1}</div>", [itemClass, result.type])
           });
         }
       });
@@ -2073,7 +2077,11 @@ require([
           })
         });
 
-        put(galleryItemNode, "div.galleryItemTitle.icon" + itemClass, result.title || "[No Title]");
+        var titleNode = put(galleryItemNode,"div.galleryItemTitle");
+        put(titleNode, "img.item-icon", { src: result.iconUrl });
+        put(titleNode, "span", result.title  || "[No Title]");
+
+        //put(galleryItemNode, "div.galleryItemTitle.icon" + itemClass, result.title || "[No Title]");
         put(galleryItemNode, "img.galleryItemThumbnail", { src: result.thumbnailUrl || "./images/no_preview.gif" });
 
       }));
