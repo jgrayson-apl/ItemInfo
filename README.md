@@ -9,7 +9,7 @@
   3. Use ‘Tag Editor’ to Add, Replace, or Remove multiple tags from multiple items.
   4. Use 'Register Services' to add ArcGIS Server services as new items.
 
-Check it out live here: [https://maps.esri.com/jg/ItemInfo/index.html](https://geoxc-apps2.bd.esri.com/Content/ItemInfo/index.html)
+Check it out live here: [https://geoxc-apps2.bd.esri.com/Content/ItemInfo/index.html](https://geoxc-apps2.bd.esri.com/Content/ItemInfo/index.html)
 
 
 #### NOTE
